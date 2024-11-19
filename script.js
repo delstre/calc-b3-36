@@ -1,17 +1,29 @@
-const buttons = document.querySelectorAll('.buttons');
-const input = document.querySelector('#display');
+const buttons = document.querySelectorAll('.invisible-button');
+const input = document.querySelector('.display');
 
-let x = 0; // calc vars
-let y = 0; //
+let x = 0;
+let y = 0;
+let z = 0; // result
 let m = 0; // memory var
 
 let act = 0;
+//let _act = 0; // cached
 
 let inv = false; // functional toggle
 let invtr = false; // inverse trigonametric (arcsin, arccos, arctg)
 
 let write = false; // for ( 2 * 4 ) and etc.
 let write_mem = 0; // 
+
+let rad = false; // radians
+
+function countDigits(value) {
+    return value.toString().replace('.', '').length;
+}
+
+function financial(x) {
+  return Number.parseFloat(x).toFixed(6);
+}
 
 /*
  *
@@ -34,45 +46,20 @@ let write_mem = 0; //
 */
 
 const nums = [
-    document.getElementById('7'),
-    document.getElementById('8'),
-    document.getElementById('9'),
-    document.getElementById('4'),
-    document.getElementById('5'),
-    document.getElementById('6'),
-    document.getElementById('1'),
-    document.getElementById('2'),
-    document.getElementById('3'),
-    document.getElementById('0'),
-    document.getElementById('dot'),
+    document.getElementById('k7'),
+    document.getElementById('k8'),
+    document.getElementById('k9'),
+    document.getElementById('k4'),
+    document.getElementById('k5'),
+    document.getElementById('k6'),
+    document.getElementById('k1'),
+    document.getElementById('k2'),
+    document.getElementById('k3'),
+    document.getElementById('k0'),
+    document.getElementById('kdot'),
 ]
 
-const mappings = {
-    clear: { current: 'C', toggle: 'CF' },
-    swap: { current: '/-/', toggle: '1/x' },
-    7: { current: '7', toggle: 'e^x' },
-    8: { current: '8', toggle: '10^x' },
-    9: { current: '9', toggle: 'y^x' },
-    left: { current: '[(', toggle: 'ЗП' },
-    right: { current: ')]', toggle: 'СП' },
-    4: { current: '4', toggle: 'ln' },
-    5: { current: '5', toggle: 'lq' },
-    6: { current: '6', toggle: 'sqrt(x)' },
-    mul: { current: '*', toggle: 'Пх' },
-    div: { current: '/', toggle: 'П/' }, // need edit
-    1: { current: '1', toggle: 'sin' },
-    2: { current: '2', toggle: 'cos' },
-    3: { current: '3', toggle: 'tg' },
-    plus: { current: '+', toggle: 'П+' },
-    minus: { current: '-', toggle: 'П-' },
-    0: { current: '0', toggle: 'P->Г' },
-    dot: { current: '.', toggle: 'Г->P' },
-    pi: { current: 'pi', toggle: 'n!' },
-    back: { current: '<->', toggle: 'x-П' },
-    equal: { current: '=', toggle: 'ИП' },
-};
-
-function actfunc(_act, value) {
+function writex(_act, value) {
     input.value = "";
     act = _act;
 
@@ -91,8 +78,8 @@ function actfunc(_act, value) {
 }
 
 function actfunc_equal(_act, value) {
-    actfunc(_act, value);
-    functionals.equal(value);
+    writex(_act, value);
+    functionals.kequal(value);
 }
 
 function writefor(value) {
@@ -104,7 +91,7 @@ function writefor(value) {
 }
 
 const functionals = {
-    equal: (value) => {
+    kequal: (value) => {
         if (inv) { // ИП
             input.value = m; 
             return;
@@ -115,22 +102,24 @@ const functionals = {
             return;
         }
 
-        if (value != "") {
+        if (y == 0 && value != "") {
             y = parseFloat(value);
         }
 
+        console.log(act);
+
         switch (act) {
-            case 0:
+            case 0: // nothing
                 return;
-            case 1:
+            case 1: // plus
                 x = x + y;
                 writefor(x);
                 return;
-            case 2:
+            case 2: // minus
                 x = x - y;
                 writefor(x);
                 return;
-            case 3:
+            case 3: // div
                 if (y == 0) {
                     input.value = "Error";
                     return;
@@ -138,140 +127,169 @@ const functionals = {
                 x = x / y;
                 writefor(x);
                 return;
-            case 4:
+            case 4: // mul
                 x = x * y;
                 writefor(x);
                 return;
             case 5:
-                x = Math.sqrt(x);
-                writefor(x);
-                return;
-            case 6:
-                x = Math.pow(Math.E, x);
-                writefor(x);
-                return;
-            case 7:
-                x = Math.pow(10, x);
-                writefor(x);
-                return;
-            case 8:
                 x = Math.pow(y, x);
                 writefor(x);
                 return;
-            case 9:
-                // ln
-                x = Math.log(x);
-                writefor(x);
-                return;
-            case 10:
-                // log
-                x = Math.log10(x);
-                writefor(x);
-                return;
-            case 11:
-                // sin
-                if (invtr) {
-                    x = Math.asin(x);
-                } else {
-                    x = Math.sin(x);
-                } 
-                writefor(x);
-                return;
-            case 12:
-                // cos
-                if (invtr) {
-                    x = Math.acos(x);
-                } else {
-                    x = Math.cos(x);
-                }
-                writefor(x);
-                return;
-            case 13:
-                // tg
-                if (invtr) {
-                    x = Math.atan(x);
-                } else {
-                    x = Math.tan(x);
-                }
-                writefor(x);
-                return;
-            case 14:
-                // fact
-                x = factorial(x);
-                writefor(x);
-                return;
-            case 15:
-                // 1/x
-                x = 1/x;
-                writefor(x);
-                return;
-
             default:
                 return
         }
     },
 
-    plus: (value) => {
+    kplus: (value) => {
         if (inv) {
             m = m + parseFloat(value);
             clear();
         } else {
-            actfunc(1, value);
+            writex(1, value);
         }
     },
-    minus: (value) => {
+    kminus: (value) => {
         if (inv) {
             m = m - parseFloat(value);
             clear();
         } else {
-            actfunc(2, value);
+            writex(2, value);
         }
     },
-    div: (value) => {
+    kdiv: (value) => {
         if (inv) {
             m = m / parseFloat(value);
             clear();
         } else {
-            actfunc(3, value);
+            writex(3, value);
         }
     },
-    mul: (value) => {
+    kmul: (value) => {
         if (inv) {
             m = m * parseFloat(value);
             clear();
         } else {
-            actfunc(4, value);
+            writex(4, value);
         }
     },
-    6: (value) => actfunc_equal(5, value),
-    7: (value) => actfunc_equal(6, value),
-    8: (value) => actfunc_equal(7, value),
-    9: (value) => actfunc(8, value),
-    4: (value) => actfunc_equal(9, value),
-    5: (value) => actfunc_equal(10, value),
-    1: (value) => actfunc_equal(11, value),
-    2: (value) => actfunc_equal(12, value),
-    3: (value) => actfunc_equal(13, value),
-    0: (value) => {
-        x = x * 180/Math.PI;
+    k6: (value) => {
+        writex(0, value);
+
+        x = Math.sqrt(x);
         writefor(x);
     },
-    dot: (value) => {
-        x = x * Math.PI/180;
+    k7: (value) => {
+        writex(0, value);
+
+        x = Math.pow(Math.E, x);
         writefor(x);
     },
-    fact: (value) => actfunc_equal(14, value),
-    swap: (value) => actfunc_equal(15, value),
-    mem: (value) => {
+    k8: (value) => {
+        writex(0, value);
+
+        x = Math.pow(10, x);
+        writefor(x);
+    },
+    k9: (value) => writex(5, value),
+    k4: (value) => {
+        writex(0, value);
+
+        x = Math.log(x);
+        writefor(x);
+    },
+    k5: (value) => {
+        writex(0, value);
+        x = Math.log10(x);
+        writefor(x);
+    },
+    k1: (value) => {
+        writex(0, value);
+
+        if (invtr) {
+            x = financial(Math.asin(x));
+        } else {
+            x = financial(Math.sin((rad ? x : x * Math.PI/180)));
+        } 
+        writefor(x);
+    },
+    k2: (value) => {
+        writex(0, value);
+
+        if (invtr) {
+            x = Math.round(Math.acos(x), 10);
+        } else {
+            x = Math.round(Math.cos(x), 10);
+        }
+        writefor(x);
+    },
+    k3: (value) => {
+        writex(0, value);
+
+        if (invtr) {
+            x = Math.round(Math.atan(x), 10);
+        } else {
+            x = Math.round(Math.tan(x), 10);
+        }
+        writefor(x);
+    },
+    k0: (value) => {
+        if (inv) {
+            x = x * 180/Math.PI;
+            writefor(x);
+        }
+    },
+    kdot: (value) => {
+        if (inv) {
+            x = x * Math.PI/180;
+            writefor(x);
+        }
+    },
+    kfact: (value) => {
+        writex(0, value);
+
+        x = factorial(x);
+        writefor(x);
+    },
+    kswap: (value) => {
+        if (inv) {
+            writex(0, value);
+
+            x = 1/x;
+            writefor(x);
+        } else {
+            if (x == 0) {
+                if (value != "") {
+                    x = parseFloat(value);
+                }
+            }
+            x = -x; 
+            writefor(x);
+        } 
+    },
+    kmem: (value) => {
         // <->
-        _t = x;
-        x = m;
-        m = _t;
-
-        writefor(x);
+        if (inv) {
+            if (x == 0) {
+                if (value != "") {
+                    x = parseFloat(value);
+                }
+            }
+            _t = x;
+            x = m;
+            m = _t;
+        } else {
+            if (y == 0 && value != "") {
+                y = parseFloat(value);
+            }
+            console.log(x, y);
+            _t = x;
+            x = y;
+            y = _t;
+            console.log(x, y);
+            writefor(y);
+        }
     },
-
-    left: (value) => {
+    kleft: (value) => {
         if (inv) {
             if (value != "") {
                 m = parseFloat(value);
@@ -281,37 +299,41 @@ const functionals = {
             write = true;
         }
     },
-    
-    right: (value) => {
+    kright: (value) => {
         if (inv) {
             m = 0;
             clear();
         } else {
             input.value = "";
-            functionals.equal(value);
+            functionals.kequal(value);
             write = false;
         }
     },
-
-    pi: () => {
+    kpi: () => {
         if (inv) {
             actfunc_equal(14, value);
         } else {
-            x = Math.PI; // to mem need
-            input.value = x;
+            input.value = Math.PI;
         }
     },
-    f: () => swap(),
-    arc: () => {
+    kf: () => {
+        inv = !inv;
+    },
+    karc: () => {
         invtr = true;
     },
-    clear: () => {
+    kclear: () => {
         if (inv) {
-            swap();
+            inv = !inv;
             return;
         }
         clear();
     },
+    ktoggle: () => {
+        let button = document.querySelector('.toggle');
+        button.style.background = rad ? "red" : "green";
+        rad = !rad;
+    }
 };
 
 function clear() {
@@ -324,25 +346,30 @@ function clear() {
     write = false;
 }
 
-function swap() {
-    Object.entries(mappings).forEach(([key, { current, toggle }]) => {
-        const button = document.getElementById(key);
-        if (button) {
-            button.innerHTML = button.innerHTML === current ? toggle : current;
-        }
-
-    });
-
-    inv = !inv;
-}
-
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
         if (nums.includes(button) && !inv) {
-            input.value += button.innerHTML;
+            let num = parseFloat(input.value);
+            if (countDigits(num) >= 10) {
+                return;
+            }
+
+            if (!input.value.includes(".") && button.id !== "kdot") {
+                if (num == 0) {
+                    input.value = "";
+                }
+            }
+
+            if (button.id == "kdot") {
+                if (input.value.includes(".")) {
+                    return;
+                }
+            }
+            input.value += button.value;
             return;
         }
 
+        console.log(button.id);
         if (button.id in functionals) {
             functionals[button.id](input.value);
         } else {

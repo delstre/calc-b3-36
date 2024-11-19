@@ -1,81 +1,161 @@
 /*Стиль калькулятора*/
-#calculator{
-    width: 500px;
-        margin: auto;
-        padding: 150px;
-        background-color: #f3f3f3;
-        border-radius: 20px;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+.image-container{
+    position: relative;
 }
 
-/* Стилизация для дисплея */
-#display {
-    display: block;
-    margin: 15px auto;
-    height: 42px;
-    width: 100%;
+.display {
+    position: absolute;
     padding: 0 10px;
-    border-radius: 4px;
-    border-top: 2px solid #C1C1C1;
-    border-right: 2px solid #C1C1C1;
-    border-bottom: 2px solid #FFF;
-    border-left: 2px solid #FFF;
-    background-color: #FFF;
-    box-shadow: inset 0px 0px 10px #030303, inset 0px -20px 1px rgba(150, 150, 150, 0.2);
-    font-size: 28px;
-    color: #666;
+    background-color: #001100;
+    font-size: 24px;
+    border: none;
+    color: #00ff00;
     text-align: right;
-    font-weight: 400;
+    width: 180px;
+    height: 32px;
+    top: 75px;
+    left: 60px;
 }
 
-/* Стили для секции buttons1 */
-#buttons1 .buttons {
-    width: 66px;
-    height: 40px;
-    margin: 5px;
-    background-color: lightblue;
-    display: inline-block;
-    color: black;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+
+.invisible-button {
+    position: absolute;
+    background: none;
+    cursor: pointer;
+    width: 40px;
+    height: 30px;
 }
 
-/* Стили для секции buttons2 */
-#buttons2 .buttons {
-    width: 66px;
-    height: 40px;
-    margin: 5px;
-    background-color: lightgreen;
-    display: inline-block;
-    color: black;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+.toggle {
+    background: red;
+    cursor: pointer;
+    width: 40px;
+    height: 30px;
+    top: 414px;
+    left: 240px;
 }
 
-/* Стили для секции buttons3 */
-#buttons3 .buttons {
-    width: 66px;
-    height: 40px;
-    margin: 5px;
-    background-color: lightcoral;
-    display: inline-block;
-    color: white;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+.clear {
+    top: 182px;
+    left: 48px;
 }
 
-/* Изменение цвета при наведении на кнопку */
-#buttons1 .buttons:hover {
-        background-color: #0056b3;
-    }
-#buttons2 .buttons:hover {
-    background-color: #0056b3;
-}
-#buttons3 .buttons:hover {
-    background-color: #0056b3;
+.swap {
+    top: 182px;
+    left: 98px;
 }
 
-/*Сдалть расположение кнопок как на оригинальном калькуляторе */
+.arc {
+    top: 182px;
+    left: 148px;
+}
+
+.vp {
+    top: 182px;
+    left: 198px;
+}
+
+.f {
+    top: 182px;
+    left: 248px;
+}
+
+.k7 {
+    top: 230px;
+    left: 48px;
+}
+
+.k8 {
+    top: 230px;
+    left: 98px;
+}
+
+.k9 {
+    top: 230px;
+    left: 148px;
+}
+
+.kleft {
+    top: 230px;
+    left: 198px;
+}
+
+.kright {
+    top: 230px;
+    left: 248px;
+}
+
+.k4 {
+    top: 274px;
+    left: 48px;
+}
+
+.k5 {
+    top: 274px;
+    left: 98px;
+}
+
+.k6 {
+    top: 274px;
+    left: 148px;
+}
+
+.kmul {
+    top: 274px;
+    left: 198px;
+}
+
+.kdiv {
+    top: 274px;
+    left: 248px;
+}
+
+.k1 {
+    top: 320px;
+    left: 48px;
+}
+
+.k2 {
+    top: 320px;
+    left: 98px;
+}
+
+.k3 {
+    top: 320px;
+    left: 148px;
+}
+
+.kplus {
+    top: 320px;
+    left: 198px;
+}
+
+.kminus {
+    top: 320px;
+    left: 248px;
+}
+
+.k0 {
+    top: 366px;
+    left: 48px;
+}
+
+.kdot {
+    top: 366px;
+    left: 98px;
+}
+
+.kpi {
+    top: 366px;
+    left: 148px;
+}
+
+.kmem {
+    top: 366px;
+    left: 198px;
+}
+
+.kequal {
+    top: 366px;
+    left: 248px;
+}

@@ -7,37 +7,37 @@
         <link rel="stylesheet" href = "style.css">
     </head>
     <body>
-        <div id = "calculator">
-            <input type = "text" id = "display" disabled>
-            <div id = "buttons1">
-                <div id="clear" class="buttons">C</div>
-                <div id="swap" class = "buttons">/-/</div>
-                <div id="arc" class = "buttons">ARC</div>
-                <div id="vp" class = "buttons">ВП</div>
-                <div id="f" class = "buttons">F</div>
-            </div>
-            <div id = "buttons2">
-                <div id="7" class = "buttons">7</div>
-                <div id="8" class = "buttons">8</div>
-                <div id="9" class = "buttons">9</div>
-                <div id="left" class = "buttons">[(</div>
-                <div id="right" class = "buttons">)]</div>
-                <div id="4" class = "buttons">4</div>
-                <div id="5" class = "buttons">5</div>
-                <div id="6" class = "buttons">6</div>
-                <div id="mul" class = "buttons">*</div>
-                <div id="div" class = "buttons">/</div>
-                <div id="1" class = "buttons">1</div>
-                <div id="2" class = "buttons">2</div>
-                <div id="3" class = "buttons">3</div>
-                <div id="plus" class = "buttons">+</div>
-                <div id="minus" class = "buttons">-</div>
-                <div id="0" class = "buttons">0</div>
-                <div id="dot" class = "buttons">.</div>
-                <div id="pi" class = "buttons">pi</div>
-                <div id="mem" class = "buttons"><-></div>
-                <div id="equal" class = "buttons">=</div>
-            </div>
+        <div class="image-container">
+            <img src="b3-36-1.png" alt="Картинка">
+            <input class="display" disabled>
+            <button id="ktoggle" class="invisible-button toggle"></button>
+
+            <button id="kclear" class="invisible-button clear"></button>
+            <button id="kswap" class="invisible-button swap"></button>
+            <button id="karc" class="invisible-button arc"></button>
+            <button id="kvp" class="invisible-button vp"></button>
+            <button id="kf" class="invisible-button f"></button>
+
+            <button id="k7" value="7" class="invisible-button k7"></button>
+            <button id="k8" value="8" class="invisible-button k8"></button>
+            <button id="k9" value="9" class="invisible-button k9"></button>
+            <button id="kleft" class="invisible-button kleft"></button>
+            <button id="kright" class="invisible-button kright"></button>
+            <button id="k4" value="4" class="invisible-button k4"></button>
+            <button id="k5" value="5" class="invisible-button k5"></button>
+            <button id="k6" value="6" class="invisible-button k6"></button>
+            <button id="kmul" class="invisible-button kmul"></button>
+            <button id="kdiv" class="invisible-button kdiv"></button>
+            <button id="k1" value="1" class="invisible-button k1"></button>
+            <button id="k2" value="2" class="invisible-button k2"></button>
+            <button id="k3" value="3" class="invisible-button k3"></button>
+            <button id="kplus" class="invisible-button kplus"></button>
+            <button id="kminus" class="invisible-button kminus"></button>
+            <button id="k0" value="0" class="invisible-button k0"></button>
+            <button id="kdot" value="." class="invisible-button kdot"></button>
+            <button id="kpi" class="invisible-button kpi"></button>
+            <button id="kmem" class="invisible-button kmem"></button>
+            <button id="kequal" class="invisible-button kequal"></button>
         </div>
         <script src="./script.js"></script>
     </body>
