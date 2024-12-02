@@ -10,12 +10,13 @@ let z = 0; // result
 let m = 0; // memory var
 
 let act = 0;
-//let _act = 0; // cached
+let _act = 0; // cached
 
 let inv = false; // functional toggle
 let invtr = false; // inverse trigonametric (arcsin, arccos, arctg)
 
-let write = false; // for ( 2 * 4 ) and etc.
+let write = 0; // for ( 2 * 4 ) and etc.
+let writen = false;
 let write_mem = 0; // 
 
 let rad = false; // radians
@@ -23,17 +24,32 @@ let rad = false; // radians
 let max = Math.pow(10, 99);
 let min = Math.pow(10, -99);
 
+// -----
+
+let expression = [];
+let save_expression = [];
+let temp_expression = [];
+
+let need_erase = false;
+
+// -----
+
 function countDigits(value) {
-    return value.toString().replace('.', '').length;
+    return value.toString().replace('.', '').replace('-', '').length;
 }
 
 function cutDigit(value) {
     str = value.toString(); //.replace('e', '');
-    return str.slice(0, str.includes('.') ? 9 : 8);
+    return str.slice(0, str.includes('.') ? 8 : 7);
 }
 
 function financial(x) {
   return Number.parseFloat(x).toFixed(6);
+}
+
+function factorial(n) {
+  if (n === 0 || n === 1) return 1; // Базовый случай: факториал 0 или 1 равен 1
+  return n * factorial(n - 1); // Рекурсивное умножение
 }
 
 
@@ -128,8 +144,8 @@ function writefor(value, neg) {
         return;
     }
 
-    if (write) {
-        write_mem = value;
+    if (write > 0) {
+        //write_mem = value;
     } else {
         let val = parseFloat(value);
         if (Math.abs(val) > max) {
@@ -186,256 +202,583 @@ function writefor(value, neg) {
     }
 }
 
+function calculateExpression(expression) {
+  if (expression.length === 0) return 0;
+
+  console.log(expression);
+
+    let result = Array.isArray(expression[0])
+    ? calculateExpression(expression[0]) // Если первый элемент — вложенное выражение, вычисляем его
+    : Number(expression[0]);
+
+
+  for (let i = 1; i < expression.length; i += 2) {
+    const operator = expression[i];
+      let nextNumber = Array.isArray(expression[i + 1])
+      ? calculateExpression(expression[i + 1]) // Если следующий элемент — вложенное выражение, вычисляем его
+      : Number(expression[i + 1]);
+
+    console.log(expression[0], result, operator, nextNumber);
+
+    if (!isNaN(nextNumber)) {
+      switch (operator) {
+        case '+':
+          result += nextNumber;
+          break;
+        case '-':
+          result -= nextNumber;
+          break;
+        case '*':
+          result *= nextNumber;
+          break;
+        case '/':
+          result /= nextNumber;
+          break;
+        case '^':
+          result = Math.pow(result, nextNumber);
+          break;
+        case 'vp':
+          result *= Math.pow(10, nextNumber);
+          break;
+      }
+    }
+  }
+
+    console.log(result);
+
+  return result;
+}
+
+function simplifyExpression(expression) {
+    let i = 0;
+    if (expression.length <= 3) {
+        return
+    }
+    
+    for (let i = 1; i < expression.length; i += 2) {
+        const operator = expression[i];
+
+        if (operator === '+' || operator === '-') {
+          const prevNumber = Number(expression[i - 1]);
+          const nextNumber = Number(expression[i + 1]);
+
+          let result;
+          if (operator === '+') {
+            result = prevNumber + nextNumber;
+          } else if (operator === '-') {
+            result = prevNumber - nextNumber;
+          }
+
+          expression.splice(i - 1, 3, result);
+        }
+    }
+
+    return expression;
+}
+
+
+function displayOutput(value) {
+    //value = BigFloat(value);
+
+    if (value < 0) {
+        d_minus.value = '-';
+    } else {
+        d_minus.value = '';
+    }
+
+    str = value.toString();
+    if (str.includes("e")) {
+        i = str.indexOf('e');
+        d_vp.value = str.substring(i+1) - 10;
+        str = str.substring(0, str.indexOf('e'));
+    } else {
+        if (countDigits(value) > 8) {
+            d_vp.value = countDigits(value) - 8;
+        }
+    }
+
+    input.value = str.replace('-', '');//.slice(0, str.includes('.') ? 8 : 8);
+}
+
+function preInput() {
+    input.value = "";
+    d_minus.value = "";
+    need_erase = false;
+}
+
+function isVP() {
+    return d_vp.value !== '' && !isNaN(d_vp.value);
+}
+
+function isNegative() {
+    return d_minus.value == '-' ? true : false;
+}
+
 const functionals = {
-    kequal: (value) => {
-        if (inv) { // ИП
-            input.value = m; 
+    kequal: (value, noexpr, nodisplay) => {
+        if (inv) {
+            input.value = m;
+            inv = false;
             return;
         }
 
-        if (write_mem != 0) {
-            input.value = write_mem;
-            return;
+        if (isNegative()) {
+            value = -value;
         }
 
-        if (_y == true) {
-            y = parseFloat(value);
-            if (d_minus.value == '-') {
-                y = -y;
-                d_minus.value = "";
-            }
-            d_vp.value = "";
-            _y = false;
+        if (isVP()) {
+            //console.log(d_vp.value);
+            //value *= Math.pow(10, d_vp.value);
         }
 
-        console.log(act);
-
-        switch (act) {
-            case 0: // nothing
-                return;
-            case 1: // plus
-                x = +x + y;
-                writefor(x);
-                return;
-            case 2: // minus
-                x = +x - y;
-                writefor(x);
-                return;
-            case 3: // div
-                if (y == 0) {
-                    input.value = "Error";
-                    return;
-                }
-                x = +x / y;
-                writefor(x);
-                return;
-            case 4: // mul
-                x = +x * y;
-                writefor(x);
-                return;
-            case 5:
-                x = Math.pow(y, x);
-                writefor(x);
-                return;
-            default:
-                return
+        if (value !== "") {
+            expression.push(value);
         }
+        
+        if (expression.length == 1) {
+            save_expression.unshift(value);
+            expression = save_expression;
+        }
+
+        console.log(expression);
+
+        const result = calculateExpression(expression); // Вычисляем
+        if (!nodisplay) {
+            displayOutput(result);
+        }
+        
+        if (expression.length >= 2 ) {
+            save_expression = [expression[expression.length-2], expression[expression.length-1]];
+        }
+
+        if (!noexpr) {
+            expression = []; // Сбрасываем выражение
+        }
+
+        need_erase = true;
+        writen = false;
+
+        //if (inv) { // ИП
+            //input.value = m; 
+            //return;
+        //}
+
+        //if (write_mem != 0) {
+            //input.value = write_mem;
+            //return;
+        //}
+
+        //if (_y == true) {
+            //y = parseFloat(value);
+            //if (d_minus.value == '-') {
+                //y = -y;
+                //d_minus.value = "";
+            //}
+            //d_vp.value = "";
+            //_y = false;
+        //}
+
+        //console.log(act);
+
+        //switch (act) {
+            //case 0: // nothing
+                //return;
+            //case 1: // plus
+                //x = +x + y;
+                //writefor(x);
+                //return;
+            //case 2: // minus
+                //x = +x - y;
+                //writefor(x);
+                //return;
+            //case 3: // div
+                //if (y == 0) {
+                    //input.value = "Error";
+                    //return;
+                //}
+                //x = +x / y;
+                //writefor(x);
+                //return;
+            //case 4: // mul
+                //x = +x * y;
+                //writefor(x);
+                //return;
+            //case 5:
+                //x = Math.pow(y, x);
+                //writefor(x);
+                //return;
+            //default:
+                //return
+        //}
     },
 
+    // PLUS
     kplus: (value) => {
         if (inv) {
             m = m + parseFloat(value);
+            console.log(m);
             clear();
+            inv = false;
         } else {
-            if (x == 0) {
-                writex(1, value);
-            } else {
-                writey(1, value);
+            if (isNegative()) {
+                value = -value;
             }
+            if (write > 0) {
+                if (value !== "") {
+                    temp_expression.push(value);
+                }
+                temp_expression.push("+");
+            } else {
+                if (value !== "") {
+                    expression.push(value);
+                }
+                expression.push("+");
+            }
+            preInput();
         }
     },
+
+    // MINUS
     kminus: (value) => {
         if (inv) {
             m = m - parseFloat(value);
+            console.log(m);
             clear();
+            inv = false;
         } else {
-            if (x == 0) {
-                writex(2, value);
-            } else {
-                writey(2, value);
+            if (isNegative()) {
+                value = -value;
             }
+            if (write > 0) {
+                if (value !== "") {
+                    temp_expression.push(value);
+                }
+                temp_expression.push("-");
+            } else {
+                if (value !== "") {
+                    expression.push(value);
+                }
+                expression.push("-");
+            }
+            preInput();
         }
     },
+
+    // DIVISION
     kdiv: (value) => {
         if (inv) {
             m = m / parseFloat(value);
+            console.log(m);
             clear();
+            inv = false;
         } else {
-            if (x == 0) {
-                writex(3, value);
-            } else {
-                writey(3, value);
+            if (isNegative()) {
+                value = -value;
             }
+            if (write > 0) {
+                if (value !== "") {
+                    temp_expression.push(value);
+                }
+                temp_expression.push("/");
+            } else {
+                if (value !== "") {
+                    expression.push(value);
+                }
+                expression.push("/");
+            }
+            preInput();
         }
     },
+
+    // MULTIPLY
     kmul: (value) => {
         if (inv) {
             m = m * parseFloat(value);
+            console.log(m);
             clear();
+            inv = false;
         } else {
-            if (x == 0) {
-                writex(4, value);
-            } else {
-                writey(4, value);
+            if (isNegative()) {
+                value = -value;
             }
+            if (write > 0) {
+                if (value !== "") {
+                    temp_expression.push(value);
+                }
+                temp_expression.push("*");
+            } else {
+                if (value !== "") {
+                    expression.push(value);
+                }
+                expression.push("*");
+            }
+            preInput();
         }
     },
-    k6: (value) => {
-        writex(0, value);
-
-        x = Math.sqrt(x);
-        writefor(x);
-    },
-    k7: (value) => {
-        writex(0, value);
-
-        x = Math.pow(Math.E, x);
-        writefor(x);
-    },
-    k8: (value) => {
-        writex(0, value);
-
-        x = Math.pow(10, x);
-        writefor(x);
-    },
-    k9: (value) => writex(5, value),
-    k4: (value) => {
-        writex(0, value);
-
-        x = Math.log(Math.abs(x));
-        writefor(x);
-    },
-    k5: (value) => {
-        writex(0, value);
-        x = Math.log10(x);
-        writefor(x);
-    },
-    k1: (value) => {
-        writex(0, value);
-
-        if (invtr) {
-            x = financial(Math.asin(x));
+    //
+    // Y^X
+    k9: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        if (write > 0) {
+            if (value !== "") {
+                temp_expression.push(value);
+            }
+            temp_expression.push("^");
         } else {
-            x = financial(Math.sin((rad ? x : x * Math.PI/180)));
-        } 
-        writefor(x);
+            if (value !== "") {
+                expression.push(value);
+            }
+            expression.push("^");
+        }
+        preInput();
+        inv = false;
     },
-    k2: (value) => {
-        writex(0, value);
 
-        if (invtr) {
-            x = Math.round(Math.acos(x), 10);
-        } else {
-            x = Math.round(Math.cos(x), 10);
-        }
-        writefor(x);
-    },
-    k3: (value) => {
-        writex(0, value);
-
-        if (invtr) {
-            x = Math.round(Math.atan(x), 10);
-        } else {
-            x = Math.round(Math.tan(x), 10);
-        }
-        writefor(x);
-    },
-    k0: (value) => {
-        if (inv) {
-            x = x * 180/Math.PI;
-            writefor(x);
-        }
-    },
-    kdot: (value) => {
-        if (inv) {
-            x = x * Math.PI/180;
-            writefor(x);
-        }
-    },
-    kfact: (value) => {
-        writex(0, value);
-
-        x = factorial(x);
-        writefor(x);
-    },
+    // MINUS TOGGLE
     kswap: (value) => {
         if (inv) {
-            writex(0, value);
-
-            x = 1/x;
-            writefor(x);
+            value = 1 / value;
+            displayOutput(value);
+            inv = false;
         } else {
-            value = parseFloat(value);
-            value = -value; 
-            writefor(value, d_minus.value == '-' ? true : false);
+            if (!isNaN(value) && value !== "") {
+                d_minus.value = d_minus.value == '-' ? '' : '-';
+            }
         } 
     },
-    kmem: (value) => {
-        // <->
-        if (inv) {
-            if (x == 0) {
-                if (value != "") {
-                    x = parseFloat(value);
-                }
+
+    // VP
+    kvp: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        if (write > 0) {
+            if (value !== "") {
+                temp_expression.push(value);
             }
-            _t = x;
-            x = m;
-            m = _t;
+            temp_expression.push("vp");
         } else {
-            if (y == 0 && value != "") {
-                y = parseFloat(value);
+            if (value !== "") {
+                expression.push(value);
             }
-            console.log(x, y);
-            _t = x;
-            x = y;
-            y = _t;
-            console.log(x, y);
-            writefor(y);
+            expression.push("vp");
+        }
+        preInput();
+    },
+
+    // SQRT
+    k6: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        value = Math.sqrt(value);
+        displayOutput(value);
+        inv = false;
+    },
+
+    // E^X
+    k7: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        value = Math.pow(Math.E, value);
+        displayOutput(value);
+        inv = false;
+    },
+
+    // 10^X
+    k8: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        value = Math.pow(10, value);
+        displayOutput(value);
+        inv = false;
+    },
+
+
+    // LN
+    k4: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        value = Math.log(Math.abs(value));
+        displayOutput(value);
+        inv = false;
+    },
+
+    // LOG10
+    k5: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        value = Math.log10(value);
+        displayOutput(value);
+        inv = false;
+    },
+
+    // SINUS
+    k1: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        if (invtr) {
+            value = Math.asin(value);
+            value *= (180/Math.PI);
+            displayOutput(value);
+            invtr = false;
+        } else {
+            value = Math.sin(rad ? value : value * Math.PI/180);
+            displayOutput(value);
+            inv = false;
+        } 
+    },
+
+    // COSINUS
+    k2: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+
+        if (invtr) {
+            value = Math.acos(value);
+            value *= (180/Math.PI);
+            displayOutput(value);
+            invtr = false;
+        } else {
+            value = Math.cos(rad ? value : value * Math.PI/180);
+            displayOutput(value);
+            inv = false;
         }
     },
+
+    // TANGENS
+    k3: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+
+        if (invtr) {
+            value = Math.atan(value);
+            value *= (180/Math.PI);
+            displayOutput(value);
+            invtr = false;
+        } else {
+            value = Math.tan(rad ? value : value * Math.PI/180);
+            displayOutput(value);
+            inv = false;
+        }
+    },
+
+    // RAD V GRAD
+    k0: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        if (inv) {
+            value = value * 180/Math.PI;
+            displayOutput(value);
+            inv = false;
+        }
+    },
+
+    // GRAD V RAD
+    kdot: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+        if (inv) {
+            value = value * Math.PI/180;
+            displayOutput(value);
+            inv = false;
+        }
+    },
+
+    // SWAP <=>
+    kmem: (value) => {
+        if (isNegative()) {
+            value = -value;
+        }
+
+        if (inv) {
+
+        } else {
+            functionals.kequal(value, true, true); 
+            console.log(expression);
+            expression = simplifyExpression(expression);
+            if (!expression) {
+                expression = [];
+                return;
+            }
+
+            console.log(expression);
+            tmp = expression[expression.length-1];
+            expression[expression.length-1] = expression[expression.length-3];
+            expression[expression.length-3] = tmp;
+            console.log(expression);
+        }
+    },
+
+    // LEFT (
     kleft: (value) => {
         if (inv) {
             if (value != "") {
                 m = parseFloat(value);
+                console.log(m);
                 clear();
+                inv = false;
             }
         } else {
-            write = true;
+            write = write + 1;
+            writen = true;
+            temp_expression = [];
         }
     },
+
+    // RIGHT )
     kright: (value) => {
         if (inv) {
             m = 0;
             clear();
         } else {
-            input.value = "";
-            functionals.kequal(value);
+
+            temp_expression.push(value);
+            expression.push(temp_expression);
+            temp_expression = [];
+            //console.log(expression);
+            preInput();
             write = false;
         }
     },
-    kpi: () => {
+
+    // PI
+    kpi: (value) => {
         if (inv) {
-            actfunc_equal(14, value);
+            if (isNegative()) {
+                value = -value;
+            }
+
+            value = factorial(value);
+            displayOutput(value);
+            inv = false;
         } else {
             input.value = Math.PI;
         }
     },
+
+    // FUNCTIONAL BUTTON
     kf: () => {
         inv = !inv;
     },
+
+    // ARC
     karc: () => {
         invtr = true;
     },
+
+    // CLEAR
     kclear: () => {
         if (inv) {
             inv = !inv;
@@ -454,6 +797,7 @@ function clear() {
     input.value = "";
     d_minus.value = "";
     d_vp.value = "";
+    expression = [];
 
     x = 0;
     y = 0;
@@ -464,7 +808,11 @@ function clear() {
 
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
-        if (nums.includes(button) && !inv) {
+        if (nums.includes(button) && !inv && !invtr) {
+            if (need_erase) {
+                preInput();
+            }
+
             let num = parseFloat(input.value);
             if (countDigits(num) >= 8) {
                 return;
@@ -485,9 +833,9 @@ buttons.forEach(function(button) {
             return;
         }
 
-        console.log(button.id);
         if (button.id in functionals) {
             functionals[button.id](input.value);
+            _act = button.id;
         } else {
             console.log('Unknown operator');
         }
