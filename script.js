@@ -1,8 +1,11 @@
 const buttons = document.querySelectorAll('.invisible-button');
 const input = document.querySelector('.display');
+const d_minus = document.querySelector('.dminus');
+const d_vp = document.querySelector('.dvp');
 
 let x = 0;
 let y = 0;
+let _y = false;
 let z = 0; // result
 let m = 0; // memory var
 
@@ -17,13 +20,26 @@ let write_mem = 0; //
 
 let rad = false; // radians
 
+let max = Math.pow(10, 99);
+let min = Math.pow(10, -99);
+
 function countDigits(value) {
     return value.toString().replace('.', '').length;
+}
+
+function cutDigit(value) {
+    str = value.toString(); //.replace('e', '');
+    return str.slice(0, str.includes('.') ? 9 : 8);
 }
 
 function financial(x) {
   return Number.parseFloat(x).toFixed(6);
 }
+
+
+// ERR
+// e - убрать или заменить на ^
+// при e нужно выводить последние 3 таким образом: -12, +24 и так далее
 
 /*
  *
@@ -59,9 +75,13 @@ const nums = [
     document.getElementById('kdot'),
 ]
 
-function writex(_act, value) {
+function prepare(_act) {
     input.value = "";
     act = _act;
+}
+
+function writex(_act, value) {
+    prepare(_act);
 
     if (write_mem != 0) {
         x = write_mem;
@@ -72,9 +92,29 @@ function writex(_act, value) {
     if (x == 0) {
         if (value != "") {
             x = parseFloat(value);
+            if (d_minus.value == '-') {
+                x = -x;
+                d_minus.value = "";
+            }
+            d_vp.value = "";
         }
+        _y = true;
         return;
     }
+}
+
+function writey(_act, value) {
+    prepare(_act);
+
+    if (value != "") {
+        y = parseFloat(value);
+        if (d_minus.value == '-') {
+            y = -y;
+            d_minus.value = "";
+            d_vp.value = "";
+        }
+    }
+    _y = true;
 }
 
 function actfunc_equal(_act, value) {
@@ -82,11 +122,67 @@ function actfunc_equal(_act, value) {
     functionals.kequal(value);
 }
 
-function writefor(value) {
+function writefor(value, neg) {
+    if (value.toString() == "NaN") {
+        input.value = ".........";
+        return;
+    }
+
     if (write) {
         write_mem = value;
     } else {
-        input.value = value;
+        let val = parseFloat(value);
+        if (Math.abs(val) > max) {
+            input.value = "............";
+            x = 0;
+            return;
+        } else if (Math.abs(val) < min) {
+            input.value = "............";
+            x = 0;
+            return;
+        }
+
+        value = value.toString().replace('-', '');
+
+        str = value.toString();
+        needval = str.includes('.') ? 9 : 8;
+        realval = value.toString().replace('.', '').length;
+
+        if (value.includes("e")) {
+            i = str.indexOf('e');
+            d_vp.value = str.substring(i+1);
+            value = value.substring(0, value.indexOf('e'));
+
+            //let [base, exponent] = str.split('e');
+            //exponent = parseInt(exponent, 10);
+        }
+
+        //base = base.replace('.', '');
+        //const significantPart = base.slice(0, 8);
+        //const remainingPart = base.slice(8);
+        
+        //let exponent = firstSignificantIndex - str.indexOf('.') - 1;
+
+        //exponent -= remainingPart.length;
+
+        //value = `${significantPart.slice(0,1)}.${significantPart.slice(1)}e${exponent}`;
+
+        if (neg) {
+            if (val < 0) {
+                d_minus.value = '';
+            } else {
+                d_minus.value = '-';
+            }
+        } else {
+            if (val < 0) {
+                d_minus.value = '-';
+            } else {
+                d_minus.value = '';
+            }
+        }
+
+        
+        input.value = cutDigit(value); //+ "^" + (countDigits(cutDigit(value))-12);
     }
 }
 
@@ -102,8 +198,14 @@ const functionals = {
             return;
         }
 
-        if (y == 0 && value != "") {
+        if (_y == true) {
             y = parseFloat(value);
+            if (d_minus.value == '-') {
+                y = -y;
+                d_minus.value = "";
+            }
+            d_vp.value = "";
+            _y = false;
         }
 
         console.log(act);
@@ -112,11 +214,11 @@ const functionals = {
             case 0: // nothing
                 return;
             case 1: // plus
-                x = x + y;
+                x = +x + y;
                 writefor(x);
                 return;
             case 2: // minus
-                x = x - y;
+                x = +x - y;
                 writefor(x);
                 return;
             case 3: // div
@@ -124,11 +226,11 @@ const functionals = {
                     input.value = "Error";
                     return;
                 }
-                x = x / y;
+                x = +x / y;
                 writefor(x);
                 return;
             case 4: // mul
-                x = x * y;
+                x = +x * y;
                 writefor(x);
                 return;
             case 5:
@@ -145,7 +247,11 @@ const functionals = {
             m = m + parseFloat(value);
             clear();
         } else {
-            writex(1, value);
+            if (x == 0) {
+                writex(1, value);
+            } else {
+                writey(1, value);
+            }
         }
     },
     kminus: (value) => {
@@ -153,7 +259,11 @@ const functionals = {
             m = m - parseFloat(value);
             clear();
         } else {
-            writex(2, value);
+            if (x == 0) {
+                writex(2, value);
+            } else {
+                writey(2, value);
+            }
         }
     },
     kdiv: (value) => {
@@ -161,7 +271,11 @@ const functionals = {
             m = m / parseFloat(value);
             clear();
         } else {
-            writex(3, value);
+            if (x == 0) {
+                writex(3, value);
+            } else {
+                writey(3, value);
+            }
         }
     },
     kmul: (value) => {
@@ -169,7 +283,11 @@ const functionals = {
             m = m * parseFloat(value);
             clear();
         } else {
-            writex(4, value);
+            if (x == 0) {
+                writex(4, value);
+            } else {
+                writey(4, value);
+            }
         }
     },
     k6: (value) => {
@@ -194,7 +312,7 @@ const functionals = {
     k4: (value) => {
         writex(0, value);
 
-        x = Math.log(x);
+        x = Math.log(Math.abs(x));
         writefor(x);
     },
     k5: (value) => {
@@ -257,13 +375,9 @@ const functionals = {
             x = 1/x;
             writefor(x);
         } else {
-            if (x == 0) {
-                if (value != "") {
-                    x = parseFloat(value);
-                }
-            }
-            x = -x; 
-            writefor(x);
+            value = parseFloat(value);
+            value = -value; 
+            writefor(value, d_minus.value == '-' ? true : false);
         } 
     },
     kmem: (value) => {
@@ -338,6 +452,8 @@ const functionals = {
 
 function clear() {
     input.value = "";
+    d_minus.value = "";
+    d_vp.value = "";
 
     x = 0;
     y = 0;
@@ -350,7 +466,7 @@ buttons.forEach(function(button) {
     button.addEventListener('click', function() {
         if (nums.includes(button) && !inv) {
             let num = parseFloat(input.value);
-            if (countDigits(num) >= 10) {
+            if (countDigits(num) >= 8) {
                 return;
             }
 
