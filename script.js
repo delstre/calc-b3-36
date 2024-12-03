@@ -24,13 +24,17 @@ let rad = false; // radians
 let max = Math.pow(10, 99);
 let min = Math.pow(10, -99);
 
+let dot = false;
+
 // -----
 
 let expression = [];
 let save_expression = [];
 let temp_expression = [];
 
-let need_erase = false;
+let need_erase = true;
+
+input.value = '0.';
 
 // -----
 
@@ -205,12 +209,12 @@ function writefor(value, neg) {
 function calculateExpression(expression) {
   if (expression.length === 0) return 0;
 
-  console.log(expression);
-
     let result = Array.isArray(expression[0])
     ? calculateExpression(expression[0]) // Если первый элемент — вложенное выражение, вычисляем его
     : Number(expression[0]);
 
+
+    console.log("EXP", result, expression.length, expression[0], expression[1]);
 
   for (let i = 1; i < expression.length; i += 2) {
     const operator = expression[i];
@@ -218,7 +222,7 @@ function calculateExpression(expression) {
       ? calculateExpression(expression[i + 1]) // Если следующий элемент — вложенное выражение, вычисляем его
       : Number(expression[i + 1]);
 
-    console.log(expression[0], result, operator, nextNumber);
+    console.log(result, operator, nextNumber);
 
     if (!isNaN(nextNumber)) {
       switch (operator) {
@@ -244,7 +248,7 @@ function calculateExpression(expression) {
     }
   }
 
-    console.log(result);
+    //console.log(result);
 
   return result;
 }
@@ -278,7 +282,11 @@ function simplifyExpression(expression) {
 
 
 function displayOutput(value) {
-    //value = BigFloat(value);
+    value = parseFloat(value);
+    if (isNaN(value)) {
+        input.value = "0.0.0.0.0.0.0.0.";
+        return
+    }
 
     if (value < 0) {
         d_minus.value = '-';
@@ -292,18 +300,32 @@ function displayOutput(value) {
         d_vp.value = str.substring(i+1) - 10;
         str = str.substring(0, str.indexOf('e'));
     } else {
-        if (countDigits(value) > 8) {
-            d_vp.value = countDigits(value) - 8;
-        }
+        d_vp.value = '';
     }
 
-    input.value = str.replace('-', '');//.slice(0, str.includes('.') ? 8 : 8);
+    console.log(dot, value);
+    if ((value % 1) !== 0) {
+        dot = true;
+        input.value = str.replace('-', '').slice(0, dot ? 9 : 8);
+    } else {
+        dot = false;
+        input.value = str.replace('-', '').slice(0, dot ? 9 : 8);
+        input.value += '.';
+    }
 }
 
-function preInput() {
-    input.value = "";
-    d_minus.value = "";
-    need_erase = false;
+function preInput(mode) {
+    if (mode) {
+        //input.value = "0.";
+        //d_minus.value = "";
+        dot = false;
+        need_erase = true;
+    } else {
+        input.value = "";
+        d_minus.value = "";
+        dot = false;
+        need_erase = false;
+    }
 }
 
 function isVP() {
@@ -312,6 +334,24 @@ function isVP() {
 
 function isNegative() {
     return d_minus.value == '-' ? true : false;
+}
+
+function button_functional(value, action) {
+    if (isNegative()) {
+        value = -value;
+    }
+    if (write > 0) {
+        if (value !== "") {
+            temp_expression.push(value);
+        }
+        temp_expression.push(action);
+    } else {
+        if (value !== "") {
+            expression.push(value);
+        }
+        expression.push(action);
+    }
+    preInput(true);
 }
 
 const functionals = {
@@ -340,7 +380,7 @@ const functionals = {
             expression = save_expression;
         }
 
-        console.log(expression);
+        //console.log(expression);
 
         const result = calculateExpression(expression); // Вычисляем
         if (!nodisplay) {
@@ -417,24 +457,10 @@ const functionals = {
         if (inv) {
             m = m + parseFloat(value);
             console.log(m);
-            clear();
+            preInput(true);
             inv = false;
         } else {
-            if (isNegative()) {
-                value = -value;
-            }
-            if (write > 0) {
-                if (value !== "") {
-                    temp_expression.push(value);
-                }
-                temp_expression.push("+");
-            } else {
-                if (value !== "") {
-                    expression.push(value);
-                }
-                expression.push("+");
-            }
-            preInput();
+            button_functional(value, "+");
         }
     },
 
@@ -443,24 +469,10 @@ const functionals = {
         if (inv) {
             m = m - parseFloat(value);
             console.log(m);
-            clear();
+            preInput(true);
             inv = false;
         } else {
-            if (isNegative()) {
-                value = -value;
-            }
-            if (write > 0) {
-                if (value !== "") {
-                    temp_expression.push(value);
-                }
-                temp_expression.push("-");
-            } else {
-                if (value !== "") {
-                    expression.push(value);
-                }
-                expression.push("-");
-            }
-            preInput();
+            button_functional(value, "-");
         }
     },
 
@@ -469,24 +481,10 @@ const functionals = {
         if (inv) {
             m = m / parseFloat(value);
             console.log(m);
-            clear();
+            preInput(true);
             inv = false;
         } else {
-            if (isNegative()) {
-                value = -value;
-            }
-            if (write > 0) {
-                if (value !== "") {
-                    temp_expression.push(value);
-                }
-                temp_expression.push("/");
-            } else {
-                if (value !== "") {
-                    expression.push(value);
-                }
-                expression.push("/");
-            }
-            preInput();
+            button_functional(value, "/");
         }
     },
 
@@ -495,44 +493,16 @@ const functionals = {
         if (inv) {
             m = m * parseFloat(value);
             console.log(m);
-            clear();
+            preInput(true);
             inv = false;
         } else {
-            if (isNegative()) {
-                value = -value;
-            }
-            if (write > 0) {
-                if (value !== "") {
-                    temp_expression.push(value);
-                }
-                temp_expression.push("*");
-            } else {
-                if (value !== "") {
-                    expression.push(value);
-                }
-                expression.push("*");
-            }
-            preInput();
+            button_functional(value, "/");
         }
     },
     //
     // Y^X
     k9: (value) => {
-        if (isNegative()) {
-            value = -value;
-        }
-        if (write > 0) {
-            if (value !== "") {
-                temp_expression.push(value);
-            }
-            temp_expression.push("^");
-        } else {
-            if (value !== "") {
-                expression.push(value);
-            }
-            expression.push("^");
-        }
-        preInput();
+        button_functional(value, "^");
         inv = false;
     },
 
@@ -551,21 +521,7 @@ const functionals = {
 
     // VP
     kvp: (value) => {
-        if (isNegative()) {
-            value = -value;
-        }
-        if (write > 0) {
-            if (value !== "") {
-                temp_expression.push(value);
-            }
-            temp_expression.push("vp");
-        } else {
-            if (value !== "") {
-                expression.push(value);
-            }
-            expression.push("vp");
-        }
-        preInput();
+        button_functional(value, "vp");
     },
 
     // SQRT
@@ -705,19 +661,12 @@ const functionals = {
         if (inv) {
 
         } else {
-            functionals.kequal(value, true, true); 
-            console.log(expression);
-            expression = simplifyExpression(expression);
-            if (!expression) {
-                expression = [];
-                return;
+            if (expression.length > 2) {
+                expression = simplifyExpression(expression);
             }
-
-            console.log(expression);
-            tmp = expression[expression.length-1];
-            expression[expression.length-1] = expression[expression.length-3];
-            expression[expression.length-3] = tmp;
-            console.log(expression);
+            tmp = input.value;
+            input.value = expression[expression.length-2];
+            expression[expression.length-2] = tmp;
         }
     },
 
@@ -727,11 +676,11 @@ const functionals = {
             if (value != "") {
                 m = parseFloat(value);
                 console.log(m);
-                clear();
                 inv = false;
+                preInput(true);
             }
         } else {
-            write = write + 1;
+            write = 1; 
             writen = true;
             temp_expression = [];
         }
@@ -741,15 +690,13 @@ const functionals = {
     kright: (value) => {
         if (inv) {
             m = 0;
-            clear();
+            preInput(true);
         } else {
-
             temp_expression.push(value);
             expression.push(temp_expression);
             temp_expression = [];
-            //console.log(expression);
             preInput();
-            write = false;
+            write = 0;
         }
     },
 
@@ -794,7 +741,7 @@ const functionals = {
 };
 
 function clear() {
-    input.value = "";
+    input.value = "0.";
     d_minus.value = "";
     d_vp.value = "";
     expression = [];
@@ -803,14 +750,18 @@ function clear() {
     y = 0;
     write_mem = 0;
 
+    need_erase = true;
     write = false;
+    dot = false;
 }
 
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
         if (nums.includes(button) && !inv && !invtr) {
             if (need_erase) {
-                preInput();
+                if (button.id !== "kdot") {
+                    preInput();
+                }
             }
 
             let num = parseFloat(input.value);
@@ -818,18 +769,26 @@ buttons.forEach(function(button) {
                 return;
             }
 
-            if (!input.value.includes(".") && button.id !== "kdot") {
-                if (num == 0) {
-                    input.value = "";
-                }
+            if (button.id == "kdot") {
+                dot = true;
+                need_erase = false;
+                return;
             }
 
-            if (button.id == "kdot") {
-                if (input.value.includes(".")) {
-                    return;
-                }
+            if (button.id == "k0" && num == 0) {
+                need_erase = true;
+                return;
             }
+
+            if (!dot) {
+                input.value = input.value.replace('.', '');
+            }
+
             input.value += button.value;
+
+            if (button.id !== "kdot" && !dot) {
+                input.value += ".";
+            }
             return;
         }
 
