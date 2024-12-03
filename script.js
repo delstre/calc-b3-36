@@ -27,14 +27,13 @@ let min = Math.pow(10, -99);
 let dot = false;
 
 // -----
+let real_value = 0;
 
 let expression = [];
 let save_expression = [];
 let temp_expression = [];
 
 let need_erase = true;
-
-input.value = '0.';
 
 // -----
 
@@ -213,16 +212,11 @@ function calculateExpression(expression) {
     ? calculateExpression(expression[0]) // Если первый элемент — вложенное выражение, вычисляем его
     : Number(expression[0]);
 
-
-    console.log("EXP", result, expression.length, expression[0], expression[1]);
-
   for (let i = 1; i < expression.length; i += 2) {
     const operator = expression[i];
       let nextNumber = Array.isArray(expression[i + 1])
       ? calculateExpression(expression[i + 1]) // Если следующий элемент — вложенное выражение, вычисляем его
       : Number(expression[i + 1]);
-
-    console.log(result, operator, nextNumber);
 
     if (!isNaN(nextNumber)) {
       switch (operator) {
@@ -247,8 +241,6 @@ function calculateExpression(expression) {
       }
     }
   }
-
-    //console.log(result);
 
   return result;
 }
@@ -280,9 +272,18 @@ function simplifyExpression(expression) {
     return expression;
 }
 
+function displayInput(value) {
+    if ((value % 1) !== 0) {
+        const factor = Math.pow(10, 7);
+        real_value = Math.trunc(value * factor) / factor;
+    } else {
+        real_value = Number(value);
+    }
+
+    input.value = value;
+}
 
 function displayOutput(value) {
-    value = parseFloat(value);
     if (isNaN(value)) {
         input.value = "0.0.0.0.0.0.0.0.";
         return
@@ -294,16 +295,28 @@ function displayOutput(value) {
         d_minus.value = '';
     }
 
-    str = value.toString();
+    str = real_value.toString();
     if (str.includes("e")) {
         i = str.indexOf('e');
-        d_vp.value = str.substring(i+1) - 10;
-        str = str.substring(0, str.indexOf('e'));
+        if ((value % 1) == 0) {
+            console.log("HH");
+            d_vp.value = str.substring(i+1) - 7;
+            str = str.substring(0, str.indexOf('e'));
+            str = parseFloat(str) * Math.pow(10, 8);
+        } else {
+            console.log(str)
+            d_vp.value = str.substring(i+1);
+            str = str.substring(0, str.indexOf('e'));
+            //str = parseFloat(str) * Math.pow(10, 8);
+        }
+        str = str.toString();
     } else {
-        d_vp.value = '';
+        let c = countDigits(real_value)
+        if (c > 8) {
+            d_vp.value = c - 8;
+        }
     }
 
-    console.log(dot, value);
     if ((value % 1) !== 0) {
         dot = true;
         input.value = str.replace('-', '').slice(0, dot ? 9 : 8);
@@ -357,7 +370,7 @@ function button_functional(value, action) {
 const functionals = {
     kequal: (value, noexpr, nodisplay) => {
         if (inv) {
-            input.value = m;
+            displayInput(m);
             inv = false;
             return;
         }
@@ -384,6 +397,7 @@ const functionals = {
 
         const result = calculateExpression(expression); // Вычисляем
         if (!nodisplay) {
+            displayInput(result);
             displayOutput(result);
         }
         
@@ -496,7 +510,7 @@ const functionals = {
             preInput(true);
             inv = false;
         } else {
-            button_functional(value, "/");
+            button_functional(value, "*");
         }
     },
     //
@@ -664,8 +678,8 @@ const functionals = {
             if (expression.length > 2) {
                 expression = simplifyExpression(expression);
             }
-            tmp = input.value;
-            input.value = expression[expression.length-2];
+            tmp = real_value;
+            displayInput(expression[expression.length-2])
             expression[expression.length-2] = tmp;
         }
     },
@@ -711,7 +725,7 @@ const functionals = {
             displayOutput(value);
             inv = false;
         } else {
-            input.value = Math.PI;
+            displayInput(Math.PI);
         }
     },
 
@@ -741,9 +755,9 @@ const functionals = {
 };
 
 function clear() {
-    input.value = "0.";
-    d_minus.value = "";
-    d_vp.value = "";
+    displayInput('0.');
+    d_minus.value = '';
+    d_vp.value = '';
     expression = [];
 
     x = 0;
@@ -755,6 +769,8 @@ function clear() {
     dot = false;
 }
 
+displayInput('0.');
+
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
         if (nums.includes(button) && !inv && !invtr) {
@@ -764,36 +780,45 @@ buttons.forEach(function(button) {
                 }
             }
 
-            let num = parseFloat(input.value);
+            let num = input.value;
             if (countDigits(num) >= 8) {
                 return;
             }
 
             if (button.id == "kdot") {
                 dot = true;
+                if (need_erase && input.value !== "0.") {
+                    displayInput('0.');
+                }
+
                 need_erase = false;
                 return;
             }
 
-            if (button.id == "k0" && num == 0) {
+            if (button.id == "k0" && num == 0 && !dot) {
                 need_erase = true;
                 return;
             }
+            
+            let str = input.value;
 
             if (!dot) {
-                input.value = input.value.replace('.', '');
+                str = str.replace('.', '');
             }
 
-            input.value += button.value;
+            str += button.value;
 
             if (button.id !== "kdot" && !dot) {
-                input.value += ".";
+                console.log("HEY", dot, button.id);
+                str += ".";
             }
+
+            displayInput(str);
             return;
         }
 
         if (button.id in functionals) {
-            functionals[button.id](input.value);
+            functionals[button.id](real_value);
             _act = button.id;
         } else {
             console.log('Unknown operator');
