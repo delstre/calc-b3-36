@@ -228,7 +228,6 @@ function formatToFixedLength(num, length = 8) {
     if (num === 0) return [0, 0];
 
     if (Math.abs(num) < 1) {
-        console.log("FLOAT");
         const exponent = Math.floor(Math.log10(Math.abs(num)));
         let mantissa = num / Math.pow(10, exponent);
 
@@ -239,7 +238,6 @@ function formatToFixedLength(num, length = 8) {
         return [mantissa, exponent];
     }
 
-    console.log("NUMBER");
     let strNum = num.toString();
 
     if (strNum.length <= length && !strNum.includes('e')) {
@@ -327,7 +325,6 @@ function isNegative() {
 
 function button_functional(value, action) {
     value = processNegative(value);
-    console.log(value);
     if (write > -1) {
         if (value !== "") {
             texpressions[write].push(value);
@@ -367,8 +364,6 @@ const functionals = {
             expression.push(value);
         }
 
-        console.log(expression);
-        
         if (expression.length == 1) {
             save_expression.unshift(value);
             expression = save_expression;
@@ -403,7 +398,6 @@ const functionals = {
                 m = parseFloat(value);
             }
 
-            console.log(m);
             preInput(true);
             //displayInput(value);
             //displayOutput(m);
@@ -424,7 +418,6 @@ const functionals = {
                 m = parseFloat(value);
             }
 
-            console.log(m);
             preInput(true);
             //displayInput(value);
             //displayOutput(m);
@@ -445,7 +438,6 @@ const functionals = {
                 m = parseFloat(value);
             }
 
-            console.log(m);
             preInput(true);
             //displayInput(value);
             //displayOutput(m);
@@ -466,7 +458,6 @@ const functionals = {
                 m = parseFloat(value);
             }
 
-            console.log(m);
             preInput(true);
             //displayInput(value);
             //displayOutput(m);
@@ -640,8 +631,6 @@ const functionals = {
         value = processNegative(value);
 
         if (inv) {
-            console.log(INPUT, m);
-
             let tmp = INPUT;
             displayInput(m);
             displayOutput(m);
@@ -679,7 +668,6 @@ const functionals = {
         if (inv) {
             if (value != "") {
                 m = parseFloat(value);
-                console.log(m);
                 inv = false;
                 //preInput(true);
             }
@@ -687,7 +675,6 @@ const functionals = {
             writen = true;
             write = write + 1; 
             texpressions[write] = [];
-            console.log(write, texpressions);
             preInput(true);
         }
     },
