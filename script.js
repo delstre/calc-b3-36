@@ -508,6 +508,7 @@ const functionals = {
         displayInput(value);
         displayOutput(value);
         inv = false;
+        preInput(true);
     },
 
     // E^X
@@ -517,6 +518,7 @@ const functionals = {
         displayInput(value);
         displayOutput(value);
         inv = false;
+        preInput(true);
     },
 
     // 10^X
@@ -526,6 +528,7 @@ const functionals = {
         displayInput(value);
         displayOutput(value);
         inv = false;
+        preInput(true);
     },
 
 
@@ -536,6 +539,7 @@ const functionals = {
         displayInput(value);
         displayOutput(value);
         inv = false;
+        preInput(true);
     },
 
     // LOG10
@@ -545,6 +549,7 @@ const functionals = {
         displayInput(value);
         displayOutput(value);
         inv = false;
+        preInput(true);
     },
 
     // SINUS
@@ -556,11 +561,13 @@ const functionals = {
             displayInput(value);
             displayOutput(value);
             invtr = false;
+            preInput(true);
         } else {
             value = Math.sin(rad ? value : value * Math.PI/180);
             displayInput(value);
             displayOutput(value);
             inv = false;
+            preInput(true);
         } 
     },
 
@@ -574,11 +581,13 @@ const functionals = {
             displayInput(value);
             displayOutput(value);
             invtr = false;
+            preInput(true);
         } else {
             value = Math.cos(rad ? value : value * Math.PI/180);
             displayInput(value);
             displayOutput(value);
             inv = false;
+            preInput(true);
         }
     },
 
@@ -592,11 +601,13 @@ const functionals = {
             displayInput(value);
             displayOutput(value);
             invtr = false;
+            preInput(true);
         } else {
             value = Math.tan(rad ? value : value * Math.PI/180);
             displayInput(value);
             displayOutput(value);
             inv = false;
+            preInput(true);
         }
     },
 
@@ -608,6 +619,7 @@ const functionals = {
             displayInput(value);
             displayOutput(value);
             inv = false;
+            preInput(true);
         }
     },
 
@@ -619,6 +631,7 @@ const functionals = {
             displayInput(value);
             displayOutput(value);
             inv = false;
+            preInput(true);
         }
     },
 
@@ -675,6 +688,7 @@ const functionals = {
             write = write + 1; 
             texpressions[write] = [];
             console.log(write, texpressions);
+            preInput(true);
         }
     },
 
@@ -716,9 +730,11 @@ const functionals = {
             value = factorial(value);
             displayInput(value);
             displayOutput(value);
+            preInput(true);
             inv = false;
         } else {
             displayInput(Math.PI);
+            preInput(true);
         }
     },
 
