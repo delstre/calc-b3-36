@@ -285,8 +285,25 @@ function displayInput(value) {
 
 function displayOutput(value) {
     if (isNaN(value)) {
-        input.value = "0.0.0.0.0.0.0.0.";
+        input.value = "........";
         return
+    }
+
+    if (value == "Infinity") {
+        input.value = "........";
+        return;
+    }
+
+    if (real_value > max) {
+        input.value = "........";
+        d_vp.value = 99;
+        return;
+    }
+
+    if (real_value > 0 && real_value < min) {
+        input.value = "........";
+        d_vp.value = -99;
+        return;
     }
 
     if (value < 0) {
@@ -299,14 +316,13 @@ function displayOutput(value) {
     if (str.includes("e")) {
         i = str.indexOf('e');
         if ((value % 1) == 0) {
-            console.log("HH");
             d_vp.value = str.substring(i+1) - 7;
             str = str.substring(0, str.indexOf('e'));
             str = parseFloat(str) * Math.pow(10, 8);
         } else {
-            console.log(str)
-            d_vp.value = str.substring(i+1);
-            str = str.substring(0, str.indexOf('e'));
+            //console.log(str)
+            //d_vp.value = str.substring(i+1);
+            //str = str.substring(0, str.indexOf('e'));
             //str = parseFloat(str) * Math.pow(10, 8);
         }
         str = str.toString();
@@ -350,7 +366,8 @@ function isNegative() {
 }
 
 function button_functional(value, action) {
-    if (isNegative()) {
+    if (isNegative() && value > 0) {
+        console.log("NEG");
         value = -value;
     }
     if (write > 0) {
@@ -359,10 +376,12 @@ function button_functional(value, action) {
         }
         temp_expression.push(action);
     } else {
+        console.log(expression);
         if (value !== "") {
             expression.push(value);
         }
         expression.push(action);
+        console.log(expression);
     }
     preInput(true);
 }
@@ -375,7 +394,7 @@ const functionals = {
             return;
         }
 
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
 
@@ -472,6 +491,8 @@ const functionals = {
             m = m + parseFloat(value);
             console.log(m);
             preInput(true);
+            displayInput(value);
+            displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "+");
@@ -484,6 +505,8 @@ const functionals = {
             m = m - parseFloat(value);
             console.log(m);
             preInput(true);
+            displayInput(value);
+            displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "-");
@@ -496,6 +519,8 @@ const functionals = {
             m = m / parseFloat(value);
             console.log(m);
             preInput(true);
+            displayInput(value);
+            displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "/");
@@ -508,6 +533,8 @@ const functionals = {
             m = m * parseFloat(value);
             console.log(m);
             preInput(true);
+            displayInput(value);
+            displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "*");
@@ -524,6 +551,7 @@ const functionals = {
     kswap: (value) => {
         if (inv) {
             value = 1 / value;
+            displayInput(value);
             displayOutput(value);
             inv = false;
         } else {
@@ -540,30 +568,33 @@ const functionals = {
 
     // SQRT
     k6: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         value = Math.sqrt(value);
+        displayInput(value);
         displayOutput(value);
         inv = false;
     },
 
     // E^X
     k7: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         value = Math.pow(Math.E, value);
+        displayInput(value);
         displayOutput(value);
         inv = false;
     },
 
     // 10^X
     k8: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         value = Math.pow(10, value);
+        displayInput(value);
         displayOutput(value);
         inv = false;
     },
@@ -571,36 +602,40 @@ const functionals = {
 
     // LN
     k4: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         value = Math.log(Math.abs(value));
+        displayInput(value);
         displayOutput(value);
         inv = false;
     },
 
     // LOG10
     k5: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         value = Math.log10(value);
+        displayInput(value);
         displayOutput(value);
         inv = false;
     },
 
     // SINUS
     k1: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         if (invtr) {
             value = Math.asin(value);
             value *= (180/Math.PI);
+            displayInput(value);
             displayOutput(value);
             invtr = false;
         } else {
             value = Math.sin(rad ? value : value * Math.PI/180);
+            displayInput(value);
             displayOutput(value);
             inv = false;
         } 
@@ -608,17 +643,19 @@ const functionals = {
 
     // COSINUS
     k2: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
 
         if (invtr) {
             value = Math.acos(value);
             value *= (180/Math.PI);
+            displayInput(value);
             displayOutput(value);
             invtr = false;
         } else {
             value = Math.cos(rad ? value : value * Math.PI/180);
+            displayInput(value);
             displayOutput(value);
             inv = false;
         }
@@ -626,17 +663,19 @@ const functionals = {
 
     // TANGENS
     k3: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
 
         if (invtr) {
             value = Math.atan(value);
             value *= (180/Math.PI);
+            displayInput(value);
             displayOutput(value);
             invtr = false;
         } else {
             value = Math.tan(rad ? value : value * Math.PI/180);
+            displayInput(value);
             displayOutput(value);
             inv = false;
         }
@@ -644,11 +683,12 @@ const functionals = {
 
     // RAD V GRAD
     k0: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         if (inv) {
             value = value * 180/Math.PI;
+            displayInput(value);
             displayOutput(value);
             inv = false;
         }
@@ -656,11 +696,12 @@ const functionals = {
 
     // GRAD V RAD
     kdot: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
         if (inv) {
             value = value * Math.PI/180;
+            displayInput(value);
             displayOutput(value);
             inv = false;
         }
@@ -668,19 +709,37 @@ const functionals = {
 
     // SWAP <=>
     kmem: (value) => {
-        if (isNegative()) {
+        if (isNegative() && value > 0) {
             value = -value;
         }
 
         if (inv) {
-
+            tmp = real_value;
+            displayInput(m);
+            m = tmp;
         } else {
             if (expression.length > 2) {
                 expression = simplifyExpression(expression);
             }
-            tmp = real_value;
-            displayInput(expression[expression.length-2])
-            expression[expression.length-2] = tmp;
+
+            if (expression.length == 2) {
+                tmp = value;
+                displayInput(expression[expression.length-2]);
+                displayOutput(expression[expression.length-2]);
+                expression[expression.length-2] = tmp;
+            } else if (expression.length == 0) {
+                expression[0] = value;
+                displayInput(0);
+                displayOutput("0.");
+            } else if (expression.length == 1) {
+                tmp = value;
+                displayInput(expression[0])
+                displayOutput(expression[0]);
+                expression[0] = tmp;
+            }
+
+            need_erase = true;
+
         }
     },
 
@@ -709,7 +768,7 @@ const functionals = {
             temp_expression.push(value);
             expression.push(temp_expression);
             temp_expression = [];
-            preInput();
+            preInput(true);
             write = 0;
         }
     },
@@ -717,11 +776,12 @@ const functionals = {
     // PI
     kpi: (value) => {
         if (inv) {
-            if (isNegative()) {
+            if (isNegative() && value > 0) {
                 value = -value;
             }
 
             value = factorial(value);
+            displayInput(value);
             displayOutput(value);
             inv = false;
         } else {
@@ -770,6 +830,9 @@ function clear() {
 }
 
 displayInput('0.');
+d_minus.value = '';
+d_vp.value = '';
+
 
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {

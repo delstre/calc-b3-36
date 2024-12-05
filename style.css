@@ -3,11 +3,16 @@
     position: relative;
 }
 
+.image {
+    /*width: 10%;*/
+}
+
 .dminus {
     position: absolute;
     padding: 0 10px;
     background-color: #001100;
     font-size: 30px;
+    font-family: "Electronica";
     border: none;
     color: #00ff00;
     text-align: left;
@@ -21,6 +26,7 @@
     position: absolute;
     padding: 0 20px;
     background-color: #001100;
+    font-family: "Electronica";
     font-size: 30px;
     border: none;
     color: #00ff00;
@@ -35,7 +41,8 @@
     position: absolute;
     padding: 0 10px;
     background-color: #001100;
-    font-size: 15px;
+    font-family: "Electronica";
+    font-size: 20px;
     border: none;
     color: #00ff00;
     text-align: left;
