@@ -7,51 +7,185 @@
     /*width: 10%;*/
 }
 
-.dminus {
+.dm {
     position: absolute;
-    padding: 0 10px;
-    background-color: #001100;
-    font-size: 30px;
-    font-family: "Electronica";
-    border: none;
-    color: #00ff00;
-    text-align: left;
-    width: 30px;
-    height: 32px;
-    top: 75px;
-    left: 60px;
-}
-
-.dvp {
-    position: absolute;
-    padding: 0 20px;
-    background-color: #001100;
-    font-family: "Electronica";
-    font-size: 30px;
-    border: none;
-    color: #00ff00;
-    text-align: left;
-    width: 40px;
-    height: 32px;
-    top: 75px;
-    left: 200px;
-}
-
-.display {
-    position: absolute;
-    padding: 0 10px;
+    /*padding: 0 0px;*/
     background-color: #001100;
     font-family: "Electronica";
     font-size: 20px;
     border: none;
     color: #00ff00;
     text-align: left;
-    width: 150px;
+    width: 20px;
     height: 32px;
+    left: 45px;
     top: 75px;
-    left: 80px;
 }
 
+.d0 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 65px;
+    top: 75px;
+}
+
+.d1 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 85px;
+    top: 75px;
+}
+
+.d2 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 105px;
+    top: 75px;
+}
+
+.d3 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 125px;
+    top: 75px;
+}
+
+.d4 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 145px;
+    top: 75px;
+}
+
+.d5 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 165px;
+    top: 75px;
+}
+
+.d6 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 185px;
+    top: 75px;
+}
+
+.d7 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 205px;
+    top: 75px;
+}
+
+.dvm {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 225px;
+    top: 75px;
+}
+
+.dv0 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 245px;
+    top: 75px;
+}
+
+.dv1 {
+    position: absolute;
+    /*padding: 0 0px;*/
+    background-color: #001100;
+    font-family: "Electronica";
+    font-size: 20px;
+    border: none;
+    color: #00ff00;
+    text-align: left;
+    width: 20px;
+    height: 32px;
+    left: 265px;
+    top: 75px;
+}
 
 .invisible-button {
     position: absolute;
@@ -62,12 +196,21 @@
 }
 
 .toggle {
-    background: red;
+    background: #00000000;
     cursor: pointer;
-    width: 40px;
+    width: 50px;
     height: 30px;
     top: 414px;
-    left: 240px;
+    left: 230px;
+}
+
+.enable {
+    background: #00000000;
+    cursor: pointer;
+    width: 50px;
+    height: 30px;
+    top: 414px;
+    left: 56px;
 }
 
 .clear {

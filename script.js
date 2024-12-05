@@ -1,12 +1,27 @@
 const buttons = document.querySelectorAll('.invisible-button');
 const input = document.querySelector('.display');
-const d_minus = document.querySelector('.dminus');
-const d_vp = document.querySelector('.dvp');
+const d0 = document.querySelector('.d0');
+const d1 = document.querySelector('.d1');
+const d2 = document.querySelector('.d2');
+const d3 = document.querySelector('.d3');
+const d4 = document.querySelector('.d4');
+const d5 = document.querySelector('.d5');
+const d6 = document.querySelector('.d6');
+const d7 = document.querySelector('.d7');
+const d_minus = document.querySelector('.dm');
+const dv_minus = document.querySelector('.dvm');
+const dv0 = document.querySelector('.dv0');
+const dv1 = document.querySelector('.dv1');
 
-let x = 0;
-let y = 0;
-let _y = false;
-let z = 0; // result
+let ENABLE = true;
+
+// input.value 
+let INPUT = '';
+let REAL = 0;
+let VP = 0;
+
+// d_vp.value
+
 let m = 0; // memory var
 
 let act = 0;
@@ -15,9 +30,8 @@ let _act = 0; // cached
 let inv = false; // functional toggle
 let invtr = false; // inverse trigonametric (arcsin, arccos, arctg)
 
-let write = 0; // for ( 2 * 4 ) and etc.
+let write = -1; // for ( 2 * 4 ) and etc.
 let writen = false;
-let write_mem = 0; // 
 
 let rad = false; // radians
 
@@ -27,58 +41,33 @@ let min = Math.pow(10, -99);
 let dot = false;
 
 // -----
-let real_value = 0;
-
 let expression = [];
 let save_expression = [];
-let temp_expression = [];
+let texpressions = []; // temp expressions
+texpressions[0] = [];
 
 let need_erase = true;
 
-// -----
-
-function countDigits(value) {
-    return value.toString().replace('.', '').replace('-', '').length;
-}
-
-function cutDigit(value) {
-    str = value.toString(); //.replace('e', '');
-    return str.slice(0, str.includes('.') ? 8 : 7);
-}
-
-function financial(x) {
-  return Number.parseFloat(x).toFixed(6);
-}
-
 function factorial(n) {
-  if (n === 0 || n === 1) return 1; // Базовый случай: факториал 0 или 1 равен 1
-  return n * factorial(n - 1); // Рекурсивное умножение
+  if (n === 0 || n === 1) return 1;
+  return n * factorial(n - 1);
 }
 
+const display = [
+    d0,
+    d1,
+    d2,
+    d3,
+    d4,
+    d5,
+    d6,
+    d7
+]
 
-// ERR
-// e - убрать или заменить на ^
-// при e нужно выводить последние 3 таким образом: -12, +24 и так далее
-
-/*
- *
- *  act = 0 - nothing
- *  act = 1 - plus
- *  act = 2 - minus
- *  act = 3 - div
- *  act = 4 - mul
- *  act = 5 - sqrt
- *  act = 6 - pow
- *  act = 7 - pow10
- *  act = 8 - powy
- *  act = 9 - ln
- *  act = 10 - log
- *  act = 11 - sin
- *  act = 12 - cos
- *  act = 13 - tg
- *  act = 14 - fact
- *
-*/
+const dv = [
+    dv0,
+    dv1
+]
 
 const nums = [
     document.getElementById('k7'),
@@ -94,128 +83,17 @@ const nums = [
     document.getElementById('kdot'),
 ]
 
-function prepare(_act) {
-    input.value = "";
-    act = _act;
-}
-
-function writex(_act, value) {
-    prepare(_act);
-
-    if (write_mem != 0) {
-        x = write_mem;
-        write_mem = 0;
-        return;
-    }
-
-    if (x == 0) {
-        if (value != "") {
-            x = parseFloat(value);
-            if (d_minus.value == '-') {
-                x = -x;
-                d_minus.value = "";
-            }
-            d_vp.value = "";
-        }
-        _y = true;
-        return;
-    }
-}
-
-function writey(_act, value) {
-    prepare(_act);
-
-    if (value != "") {
-        y = parseFloat(value);
-        if (d_minus.value == '-') {
-            y = -y;
-            d_minus.value = "";
-            d_vp.value = "";
-        }
-    }
-    _y = true;
-}
-
-function actfunc_equal(_act, value) {
-    writex(_act, value);
-    functionals.kequal(value);
-}
-
-function writefor(value, neg) {
-    if (value.toString() == "NaN") {
-        input.value = ".........";
-        return;
-    }
-
-    if (write > 0) {
-        //write_mem = value;
-    } else {
-        let val = parseFloat(value);
-        if (Math.abs(val) > max) {
-            input.value = "............";
-            x = 0;
-            return;
-        } else if (Math.abs(val) < min) {
-            input.value = "............";
-            x = 0;
-            return;
-        }
-
-        value = value.toString().replace('-', '');
-
-        str = value.toString();
-        needval = str.includes('.') ? 9 : 8;
-        realval = value.toString().replace('.', '').length;
-
-        if (value.includes("e")) {
-            i = str.indexOf('e');
-            d_vp.value = str.substring(i+1);
-            value = value.substring(0, value.indexOf('e'));
-
-            //let [base, exponent] = str.split('e');
-            //exponent = parseInt(exponent, 10);
-        }
-
-        //base = base.replace('.', '');
-        //const significantPart = base.slice(0, 8);
-        //const remainingPart = base.slice(8);
-        
-        //let exponent = firstSignificantIndex - str.indexOf('.') - 1;
-
-        //exponent -= remainingPart.length;
-
-        //value = `${significantPart.slice(0,1)}.${significantPart.slice(1)}e${exponent}`;
-
-        if (neg) {
-            if (val < 0) {
-                d_minus.value = '';
-            } else {
-                d_minus.value = '-';
-            }
-        } else {
-            if (val < 0) {
-                d_minus.value = '-';
-            } else {
-                d_minus.value = '';
-            }
-        }
-
-        
-        input.value = cutDigit(value); //+ "^" + (countDigits(cutDigit(value))-12);
-    }
-}
-
 function calculateExpression(expression) {
   if (expression.length === 0) return 0;
 
     let result = Array.isArray(expression[0])
-    ? calculateExpression(expression[0]) // Если первый элемент — вложенное выражение, вычисляем его
+    ? calculateExpression(expression[0])
     : Number(expression[0]);
 
   for (let i = 1; i < expression.length; i += 2) {
     const operator = expression[i];
       let nextNumber = Array.isArray(expression[i + 1])
-      ? calculateExpression(expression[i + 1]) // Если следующий элемент — вложенное выражение, вычисляем его
+      ? calculateExpression(expression[i + 1])
       : Number(expression[i + 1]);
 
     if (!isNaN(nextNumber)) {
@@ -272,39 +150,126 @@ function simplifyExpression(expression) {
     return expression;
 }
 
-function displayInput(value) {
-    if ((value % 1) !== 0) {
-        const factor = Math.pow(10, 7);
-        real_value = Math.trunc(value * factor) / factor;
+function formatNumberWithDot(num) {
+  return num
+    .toString()
+    .split("")
+    .map((char, index, arr) => {
+      if (char === "." && !isNaN(arr[index - 1])) {
+        return ".";
+      }
+      return char;
+    })
+    .reduce((acc, char, index, arr) => {
+      if (char === "." && !isNaN(arr[index - 1])) {
+        acc[acc.length - 1] += char;
+      } else {
+        acc.push(char);
+      }
+      return acc;
+    }, [])
+}
+
+function displayOverflow() {
+    display.forEach(function(d) {
+        d.value = ' .';
+    })
+    return;
+}
+
+function displayProcess(str, str_vp = 0) {
+    let m = formatNumberWithDot(str);
+    display.forEach(function(d) {
+        d.value = '';
+    })
+
+    m.forEach(function(val, i) {
+        if (i <= 7) {
+            display[i].value = val;
+        } 
+    });
+
+    if (str_vp < 0) {
+        dv_minus.value = '-';
+        str_vp = -str_vp;
     } else {
-        real_value = Number(value);
+        dv_minus.value = '';
     }
 
-    input.value = value;
+    let md = formatNumberWithDot(str_vp);
+    dv.forEach(function(d) {
+        d.value = '';
+    });
+
+    if (str_vp !== 0) {
+        if (str_vp <= 9) {
+            dv[0].value = (isNaN(md[1]) ? '' : md[1]);
+            dv[1].value = (isNaN(md[0]) ? '' : md[0]);
+        } else {
+            dv[0].value = (isNaN(md[0]) ? '' : md[0]);
+            dv[1].value = (isNaN(md[1]) ? '' : md[1]);
+        }
+    }
+}
+
+function displayInput(value) {
+    REAL = parseFloat(value);
+    INPUT = value;
+    displayProcess(value, VP);
+}
+
+function formatToFixedLength(num, length = 8) {
+    if (num === 0) return [0, 0];
+
+    if (Math.abs(num) < 1) {
+        console.log("FLOAT");
+        const exponent = Math.floor(Math.log10(Math.abs(num)));
+        let mantissa = num / Math.pow(10, exponent);
+
+        if (Math.abs(mantissa) < 1) {
+            mantissa *= 10;
+            exponent -= 1;
+        }
+        return [mantissa, exponent];
+    }
+
+    console.log("NUMBER");
+    let strNum = num.toString();
+
+    if (strNum.length <= length && !strNum.includes('e')) {
+        return [num, 0];
+    }
+
+    const exponent = Math.floor(Math.log10(Math.abs(num)));
+    const mantissa = num / Math.pow(10, exponent);
+
+    const formattedMantissa = mantissa.toFixed(length - 2);
+
+    return [formattedMantissa, exponent];
 }
 
 function displayOutput(value) {
     if (isNaN(value)) {
-        input.value = "........";
+        displayOverflow();
         return
     }
 
     if (value == "Infinity") {
-        input.value = "........";
+        displayOverflow();
         return;
     }
 
-    if (real_value > max) {
-        input.value = "........";
-        d_vp.value = 99;
+    if (REAL > max) {
+        displayOverflow();
         return;
     }
 
-    if (real_value > 0 && real_value < min) {
-        input.value = "........";
-        d_vp.value = -99;
+    if (REAL > 0 && REAL < min) {
+        displayOverflow();
         return;
     }
+
+    [INPUT, VP] = formatToFixedLength(REAL);
 
     if (value < 0) {
         d_minus.value = '-';
@@ -312,35 +277,21 @@ function displayOutput(value) {
         d_minus.value = '';
     }
 
-    str = real_value.toString();
-    if (str.includes("e")) {
-        i = str.indexOf('e');
-        if ((value % 1) == 0) {
-            d_vp.value = str.substring(i+1) - 7;
-            str = str.substring(0, str.indexOf('e'));
-            str = parseFloat(str) * Math.pow(10, 8);
-        } else {
-            //console.log(str)
-            //d_vp.value = str.substring(i+1);
-            //str = str.substring(0, str.indexOf('e'));
-            //str = parseFloat(str) * Math.pow(10, 8);
-        }
-        str = str.toString();
-    } else {
-        let c = countDigits(real_value)
-        if (c > 8) {
-            d_vp.value = c - 8;
-        }
+    if (INPUT[0] === "-") {
+        INPUT = INPUT.slice(1);
     }
 
     if ((value % 1) !== 0) {
         dot = true;
-        input.value = str.replace('-', '').slice(0, dot ? 9 : 8);
     } else {
         dot = false;
-        input.value = str.replace('-', '').slice(0, dot ? 9 : 8);
-        input.value += '.';
+        console.log(VP);
+        if (VP == 0) {
+            INPUT += '.';
+        }
     }
+
+    displayProcess(INPUT, VP);
 }
 
 function preInput(mode) {
@@ -350,15 +301,18 @@ function preInput(mode) {
         dot = false;
         need_erase = true;
     } else {
-        input.value = "";
+        INPUT = "";
         d_minus.value = "";
+        dv0.value = '';
+        dv1.value = '';
+        dv_minus.value = '';
         dot = false;
         need_erase = false;
     }
 }
 
 function isVP() {
-    return d_vp.value !== '' && !isNaN(d_vp.value);
+    return VP !== '' && !isNaN(VP);
 }
 
 function isNegative() {
@@ -366,24 +320,30 @@ function isNegative() {
 }
 
 function button_functional(value, action) {
-    if (isNegative() && value > 0) {
-        console.log("NEG");
-        value = -value;
-    }
-    if (write > 0) {
+    value = processNegative(value);
+    console.log(value);
+    if (write > -1) {
         if (value !== "") {
-            temp_expression.push(value);
+            texpressions[write].push(value);
         }
-        temp_expression.push(action);
+        texpressions[write].push(action);
     } else {
-        console.log(expression);
         if (value !== "") {
             expression.push(value);
         }
         expression.push(action);
-        console.log(expression);
     }
     preInput(true);
+}
+
+function processNegative(value) {
+    if (isNegative() && value > 0) {
+        value = -value;
+    } else if (!isNegative() && value < 0) {
+        value = -value;
+    }
+
+    return value;
 }
 
 const functionals = {
@@ -394,25 +354,18 @@ const functionals = {
             return;
         }
 
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
-
-        if (isVP()) {
-            //console.log(d_vp.value);
-            //value *= Math.pow(10, d_vp.value);
-        }
+        value = processNegative(value);
 
         if (value !== "") {
             expression.push(value);
         }
+
+        console.log(expression);
         
         if (expression.length == 1) {
             save_expression.unshift(value);
             expression = save_expression;
         }
-
-        //console.log(expression);
 
         const result = calculateExpression(expression); // Вычисляем
         if (!nodisplay) {
@@ -430,59 +383,6 @@ const functionals = {
 
         need_erase = true;
         writen = false;
-
-        //if (inv) { // ИП
-            //input.value = m; 
-            //return;
-        //}
-
-        //if (write_mem != 0) {
-            //input.value = write_mem;
-            //return;
-        //}
-
-        //if (_y == true) {
-            //y = parseFloat(value);
-            //if (d_minus.value == '-') {
-                //y = -y;
-                //d_minus.value = "";
-            //}
-            //d_vp.value = "";
-            //_y = false;
-        //}
-
-        //console.log(act);
-
-        //switch (act) {
-            //case 0: // nothing
-                //return;
-            //case 1: // plus
-                //x = +x + y;
-                //writefor(x);
-                //return;
-            //case 2: // minus
-                //x = +x - y;
-                //writefor(x);
-                //return;
-            //case 3: // div
-                //if (y == 0) {
-                    //input.value = "Error";
-                    //return;
-                //}
-                //x = +x / y;
-                //writefor(x);
-                //return;
-            //case 4: // mul
-                //x = +x * y;
-                //writefor(x);
-                //return;
-            //case 5:
-                //x = Math.pow(y, x);
-                //writefor(x);
-                //return;
-            //default:
-                //return
-        //}
     },
 
     // PLUS
@@ -568,9 +468,7 @@ const functionals = {
 
     // SQRT
     k6: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         value = Math.sqrt(value);
         displayInput(value);
         displayOutput(value);
@@ -579,9 +477,7 @@ const functionals = {
 
     // E^X
     k7: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         value = Math.pow(Math.E, value);
         displayInput(value);
         displayOutput(value);
@@ -590,9 +486,7 @@ const functionals = {
 
     // 10^X
     k8: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         value = Math.pow(10, value);
         displayInput(value);
         displayOutput(value);
@@ -602,9 +496,7 @@ const functionals = {
 
     // LN
     k4: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         value = Math.log(Math.abs(value));
         displayInput(value);
         displayOutput(value);
@@ -613,9 +505,7 @@ const functionals = {
 
     // LOG10
     k5: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         value = Math.log10(value);
         displayInput(value);
         displayOutput(value);
@@ -624,9 +514,7 @@ const functionals = {
 
     // SINUS
     k1: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         if (invtr) {
             value = Math.asin(value);
             value *= (180/Math.PI);
@@ -643,9 +531,7 @@ const functionals = {
 
     // COSINUS
     k2: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
 
         if (invtr) {
             value = Math.acos(value);
@@ -663,9 +549,7 @@ const functionals = {
 
     // TANGENS
     k3: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
 
         if (invtr) {
             value = Math.atan(value);
@@ -683,9 +567,7 @@ const functionals = {
 
     // RAD V GRAD
     k0: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         if (inv) {
             value = value * 180/Math.PI;
             displayInput(value);
@@ -696,9 +578,7 @@ const functionals = {
 
     // GRAD V RAD
     kdot: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
         if (inv) {
             value = value * Math.PI/180;
             displayInput(value);
@@ -709,12 +589,10 @@ const functionals = {
 
     // SWAP <=>
     kmem: (value) => {
-        if (isNegative() && value > 0) {
-            value = -value;
-        }
+        value = processNegative(value);
 
         if (inv) {
-            tmp = real_value;
+            tmp = REAL;
             displayInput(m);
             m = tmp;
         } else {
@@ -753,9 +631,10 @@ const functionals = {
                 preInput(true);
             }
         } else {
-            write = 1; 
             writen = true;
-            temp_expression = [];
+            write = write + 1; 
+            texpressions[write] = [];
+            console.log(write, texpressions);
         }
     },
 
@@ -765,20 +644,33 @@ const functionals = {
             m = 0;
             preInput(true);
         } else {
-            temp_expression.push(value);
-            expression.push(temp_expression);
-            temp_expression = [];
+            if (write == -1) {
+                texpressions = []
+                texpressions[0] = [];
+                write = -1;
+                return;
+            }
+
+            texpressions[write].push(value);
+            write = write - 1;
+            
+            const result = calculateExpression(texpressions[write+1]);
+            displayInput(result);
+            displayOutput(result);
+
+            if (write == -1) {
+                preInput(true);
+                return
+            }
+
             preInput(true);
-            write = 0;
         }
     },
 
     // PI
     kpi: (value) => {
         if (inv) {
-            if (isNegative() && value > 0) {
-                value = -value;
-            }
+            value = processNegative(value);
 
             value = factorial(value);
             displayInput(value);
@@ -808,34 +700,51 @@ const functionals = {
         clear();
     },
     ktoggle: () => {
-        let button = document.querySelector('.toggle');
-        button.style.background = rad ? "red" : "green";
+        let button = document.querySelector('.ktoggle-image');
+        button.src = rad ? "toggle_grad.png" : "toggle_rad.png";
         rad = !rad;
+    },
+    kenable: () => {
+        let button = document.querySelector('.kenable-image');
+        button.src = ENABLE ? "enable_off.png" : "enable_on.png";
+        ENABLE = !ENABLE;
+
+        if (ENABLE) {
+            displayInput('0.');
+        } else {
+            clear();
+            displayInput('');
+        }
     }
 };
 
 function clear() {
     displayInput('0.');
     d_minus.value = '';
-    d_vp.value = '';
+    dv0.value = '';
+    dv1.value = '';
+    dv_minus.value = '';
+    VP = 0;
     expression = [];
-
-    x = 0;
-    y = 0;
-    write_mem = 0;
+    texpressions = []
+    texpressions[0] = [];
+    save_expression = [];
+    write = -1;
 
     need_erase = true;
-    write = false;
     dot = false;
 }
 
 displayInput('0.');
 d_minus.value = '';
-d_vp.value = '';
 
 
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
+        if (!ENABLE && button.id !== "kenable") {
+            return;
+        }
+
         if (nums.includes(button) && !inv && !invtr) {
             if (need_erase) {
                 if (button.id !== "kdot") {
@@ -843,14 +752,14 @@ buttons.forEach(function(button) {
                 }
             }
 
-            let num = input.value;
-            if (countDigits(num) >= 8) {
+            let num = INPUT;
+            if (num.toString().replace('.', '').replace('-', '').length >= 8) {
                 return;
             }
 
             if (button.id == "kdot") {
                 dot = true;
-                if (need_erase && input.value !== "0.") {
+                if (need_erase && INPUT !== "0.") {
                     displayInput('0.');
                 }
 
@@ -859,11 +768,12 @@ buttons.forEach(function(button) {
             }
 
             if (button.id == "k0" && num == 0 && !dot) {
+                displayInput('0.');
                 need_erase = true;
                 return;
             }
             
-            let str = input.value;
+            let str = INPUT;
 
             if (!dot) {
                 str = str.replace('.', '');
@@ -872,7 +782,6 @@ buttons.forEach(function(button) {
             str += button.value;
 
             if (button.id !== "kdot" && !dot) {
-                console.log("HEY", dot, button.id);
                 str += ".";
             }
 
@@ -881,10 +790,8 @@ buttons.forEach(function(button) {
         }
 
         if (button.id in functionals) {
-            functionals[button.id](real_value);
+            functionals[button.id](REAL);
             _act = button.id;
-        } else {
-            console.log('Unknown operator');
         }
     });
 });
