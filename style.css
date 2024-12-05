@@ -7,6 +7,14 @@
     /*width: 10%;*/
 }
 
+.pdf {
+    position: absolute;
+    left: 400px;
+    top: 10px;
+    width: 1400px;
+    height: 800px;
+}
+
 .dm {
     position: absolute;
     /*padding: 0 0px;*/

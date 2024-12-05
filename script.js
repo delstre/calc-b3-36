@@ -14,6 +14,7 @@ const dv0 = document.querySelector('.dv0');
 const dv1 = document.querySelector('.dv1');
 
 let ENABLE = true;
+let OF = false;
 
 // input.value 
 let INPUT = '';
@@ -172,8 +173,13 @@ function formatNumberWithDot(num) {
 
 function displayOverflow() {
     display.forEach(function(d) {
-        d.value = ' .';
+        d.value = '0.';
     })
+    dv.forEach(function(d) {
+        d.value = '0.';
+    });
+    
+    OF = true;
     return;
 }
 
@@ -270,6 +276,7 @@ function displayOutput(value) {
     }
 
     [INPUT, VP] = formatToFixedLength(REAL);
+    INPUT = INPUT.toString();
 
     if (value < 0) {
         d_minus.value = '-';
@@ -285,7 +292,6 @@ function displayOutput(value) {
         dot = true;
     } else {
         dot = false;
-        console.log(VP);
         if (VP == 0) {
             INPUT += '.';
         }
@@ -350,6 +356,7 @@ const functionals = {
     kequal: (value, noexpr, nodisplay) => {
         if (inv) {
             displayInput(m);
+            displayOutput(m);
             inv = false;
             return;
         }
@@ -389,10 +396,17 @@ const functionals = {
     kplus: (value) => {
         if (inv) {
             m = m + parseFloat(value);
+
+            if (m > max) {
+                m = parseFloat(value);
+            } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            }
+
             console.log(m);
             preInput(true);
-            displayInput(value);
-            displayOutput(m);
+            //displayInput(value);
+            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "+");
@@ -403,10 +417,17 @@ const functionals = {
     kminus: (value) => {
         if (inv) {
             m = m - parseFloat(value);
+
+            if (m > max) {
+                m = parseFloat(value);
+            } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            }
+
             console.log(m);
             preInput(true);
-            displayInput(value);
-            displayOutput(m);
+            //displayInput(value);
+            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "-");
@@ -417,10 +438,17 @@ const functionals = {
     kdiv: (value) => {
         if (inv) {
             m = m / parseFloat(value);
+
+            if (m > max) {
+                m = parseFloat(value);
+            } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            }
+
             console.log(m);
             preInput(true);
-            displayInput(value);
-            displayOutput(m);
+            //displayInput(value);
+            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "/");
@@ -431,10 +459,17 @@ const functionals = {
     kmul: (value) => {
         if (inv) {
             m = m * parseFloat(value);
+
+            if (m > max) {
+                m = parseFloat(value);
+            } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            }
+
             console.log(m);
             preInput(true);
-            displayInput(value);
-            displayOutput(m);
+            //displayInput(value);
+            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "*");
@@ -592,9 +627,14 @@ const functionals = {
         value = processNegative(value);
 
         if (inv) {
-            tmp = REAL;
+            console.log(INPUT, m);
+
+            let tmp = INPUT;
             displayInput(m);
+            displayOutput(m);
             m = tmp;
+            inv = false;
+            preInput(true);
         } else {
             if (expression.length > 2) {
                 expression = simplifyExpression(expression);
@@ -628,7 +668,7 @@ const functionals = {
                 m = parseFloat(value);
                 console.log(m);
                 inv = false;
-                preInput(true);
+                //preInput(true);
             }
         } else {
             writen = true;
@@ -642,7 +682,8 @@ const functionals = {
     kright: (value) => {
         if (inv) {
             m = 0;
-            preInput(true);
+            inv = false;
+            //preInput(true);
         } else {
             if (write == -1) {
                 texpressions = []
@@ -693,6 +734,7 @@ const functionals = {
 
     // CLEAR
     kclear: () => {
+        invtr = false;
         if (inv) {
             inv = !inv;
             return;
@@ -733,6 +775,7 @@ function clear() {
 
     need_erase = true;
     dot = false;
+    OF = false;
 }
 
 displayInput('0.');
@@ -741,6 +784,10 @@ d_minus.value = '';
 
 buttons.forEach(function(button) {
     button.addEventListener('click', function() {
+        if (OF && button.id !== 'kclear') {
+            return;
+        }
+
         if (!ENABLE && button.id !== "kenable") {
             return;
         }
