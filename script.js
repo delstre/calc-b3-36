@@ -226,8 +226,9 @@ function displayInput(value) {
 
 function formatToFixedLength(num, length = 8) {
     if (num === 0) return [0, 0];
+    num = Number(num.toExponential(8)); // ?
 
-    if (Math.abs(num) < 1) {
+    if (Math.abs(num) < 1)  {
         const exponent = Math.floor(Math.log10(Math.abs(num)));
         let mantissa = num / Math.pow(10, exponent);
 
@@ -247,9 +248,8 @@ function formatToFixedLength(num, length = 8) {
     const exponent = Math.floor(Math.log10(Math.abs(num)));
     const mantissa = num / Math.pow(10, exponent);
 
-    const formattedMantissa = mantissa.toFixed(length - 2);
-
-    return [formattedMantissa, exponent];
+    const fixedMantissa = mantissa.toFixed(length - 1);
+    return [fixedMantissa, exponent];
 }
 
 function displayOutput(value) {
@@ -302,14 +302,18 @@ function preInput(mode) {
     if (mode) {
         //input.value = "0.";
         //d_minus.value = "";
+        //dv0.value = '';
+        //dv1.value = '';
+        //dv_minus.value = '';
         dot = false;
         need_erase = true;
     } else {
-        INPUT = "";
-        d_minus.value = "";
+        INPUT = '';
+        d_minus.value = '';
         dv0.value = '';
         dv1.value = '';
         dv_minus.value = '';
+        VP = 0;
         dot = false;
         need_erase = false;
     }
@@ -669,7 +673,7 @@ const functionals = {
             if (value != "") {
                 m = parseFloat(value);
                 inv = false;
-                //preInput(true);
+                preInput(true);
             }
         } else {
             writen = true;
@@ -684,7 +688,7 @@ const functionals = {
         if (inv) {
             m = 0;
             inv = false;
-            //preInput(true);
+            preInput(true);
         } else {
             if (write == -1) {
                 texpressions = []
