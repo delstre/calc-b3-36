@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.12.5)  5 DEC 2024 21:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.12.8)  8 DEC 2024 14:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -311,11 +311,51 @@ Overfull \hbox (15.88582pt too wide) in paragraph at lines 113--150
  []
 
 [4]
-Overfull \hbox (33.51064pt too wide) in paragraph at lines 151--162
+
+LaTeX Warning: Command \CYRR invalid in math mode on input line 164.
+
+
+LaTeX Warning: Command \cyra invalid in math mode on input line 164.
+
+
+LaTeX Warning: Command \cyrd invalid in math mode on input line 164.
+
+
+LaTeX Warning: Command \cyri invalid in math mode on input line 164.
+
+
+LaTeX Warning: Command \cyra invalid in math mode on input line 164.
+
+
+LaTeX Warning: Command \cyrn invalid in math mode on input line 164.
+
+Missing character: There is no Р in font cmr12!
+Missing character: There is no а in font cmr12!
+Missing character: There is no д in font cmr12!
+Missing character: There is no и in font cmr12!
+Missing character: There is no а in font cmr12!
+Missing character: There is no н in font cmr12!
+
+Underfull \hbox (badness 10000) in paragraph at lines 167--168
+[]\T2A/cmr/m/n/12 12. Вы-чис-ле-ние об-рат-
+ []
+
+
+Underfull \hbox (badness 3679) in paragraph at lines 167--168
+\T2A/cmr/m/n/12 ных три-го-но-мет-ри-че-ских
+ []
+
+
+Overfull \hbox (33.51064pt too wide) in paragraph at lines 151--185
 [][] 
  []
 
-[5] [6] (./math.aux)
+[5]
+Overfull \hbox (33.51064pt too wide) in paragraph at lines 186--205
+[][] 
+ []
+
+[6] [7] (./math.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -324,16 +364,16 @@ L3 programming layer <2024-02-20>
 Here is how much of TeX's memory you used:
  2180 strings out of 475550
  34488 string characters out of 5785873
- 1940187 words of memory out of 5000000
+ 1945187 words of memory out of 5000000
  24339 multiletter control sequences out of 15000+600000
  564388 words of font info for 50 fonts, out of 8000000 for 9000
  430 hyphenation exceptions out of 8191
- 46i,10n,52p,886b,194s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on math.pdf (6 pages, 116350 bytes).
+ 46i,11n,52p,886b,194s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
+Output written on math.pdf (7 pages, 132054 bytes).
 PDF statistics:
- 73 PDF objects out of 1000 (max. 8388607)
- 45 compressed objects within 1 object stream
+ 83 PDF objects out of 1000 (max. 8388607)
+ 52 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
