@@ -257,9 +257,11 @@ function formatToFixedLength(num, length = 8) {
     if (num === 0) return [0, 0];
     num = Number(num.toExponential(length)); // ?
 
-    console.log(num, REAL);
-
     if (Math.abs(num) < 1)  {
+        if (num.toFixed(8) <= 0) {
+            return [0, 0];
+        }
+
         const exponent = Math.floor(Math.log10(Math.abs(num)));
         let mantissa = num / Math.pow(10, exponent);
 
@@ -274,6 +276,7 @@ function formatToFixedLength(num, length = 8) {
     if (Math.abs(num) <= 99999999 && !strNum.includes('e')) {
         return [num, 0];
     }
+
 
     const exponent = Math.floor(Math.log10(Math.abs(num)));
     const mantissa = num / Math.pow(10, exponent);
@@ -630,7 +633,8 @@ const functionals = {
         value = processNegative(value);
         if (invtr) {
             value = Math.asin(value);
-            value *= (180/Math.PI);
+            value = (rad ? value : value * 180/Math.PI);
+            value = value.toFixed(8);
             displayInput(value);
             displayOutput(value);
             invtr = false;
@@ -650,7 +654,8 @@ const functionals = {
 
         if (invtr) {
             value = Math.acos(value);
-            value *= (180/Math.PI);
+            value = (rad ? value : value * 180/Math.PI);
+            value = value.toFixed(8);
             displayInput(value);
             displayOutput(value);
             invtr = false;
@@ -670,7 +675,8 @@ const functionals = {
 
         if (invtr) {
             value = Math.atan(value);
-            value *= (180/Math.PI);
+            value = (rad ? value : value * 180/Math.PI);
+            value = value.toFixed(8);
             displayInput(value);
             displayOutput(value);
             invtr = false;
