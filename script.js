@@ -15,11 +15,13 @@ const dv1 = document.querySelector('.dv1');
 
 let ENABLE = true;
 let OF = false;
+let VPINPUT = false;
 
 // input.value 
 let INPUT = '';
 let REAL = 0;
 let VP = 0;
+
 
 // d_vp.value
 
@@ -40,6 +42,7 @@ let max = Math.pow(10, 99);
 let min = Math.pow(10, -99);
 
 let dot = false;
+
 
 // -----
 let expression = [];
@@ -91,7 +94,7 @@ function calculateExpression(expression) {
     ? calculateExpression(expression[0])
     : Number(expression[0]);
 
-  for (let i = 1; i < expression.length; i += 2) {
+ for (let i = 1; i < expression.length; i += 2) {
     const operator = expression[i];
       let nextNumber = Array.isArray(expression[i + 1])
       ? calculateExpression(expression[i + 1])
@@ -114,9 +117,9 @@ function calculateExpression(expression) {
         case '^':
           result = Math.pow(result, nextNumber);
           break;
-        case 'vp':
-          result *= Math.pow(10, nextNumber);
-          break;
+        //case 'vp':
+          //result *= Math.pow(10, nextNumber);
+          //break;
       }
     }
   }
@@ -183,18 +186,21 @@ function displayOverflow() {
     return;
 }
 
-function displayProcess(str, str_vp = 0) {
-    let m = formatNumberWithDot(str);
-    display.forEach(function(d) {
-        d.value = '';
-    })
+function processVP() {
+    if (VPINPUT) {
+        REAL = REAL * Math.pow(10, VP);
+        VPINPUT = false;
+    }
 
-    m.forEach(function(val, i) {
-        if (i <= 7) {
-            display[i].value = val;
-        } 
-    });
+    if (VP > 99 || VP < -99) {
+        displayOverflow();
+        return;
+    }
 
+    return REAL;
+}
+
+function displayProcess_VP(str_vp) {
     if (str_vp < 0) {
         dv_minus.value = '-';
         str_vp = -str_vp;
@@ -209,7 +215,7 @@ function displayProcess(str, str_vp = 0) {
 
     if (str_vp !== 0) {
         if (str_vp <= 9) {
-            dv[0].value = (isNaN(md[1]) ? '' : md[1]);
+            dv[0].value = (isNaN(md[1]) ? '0' : md[1]);
             dv[1].value = (isNaN(md[0]) ? '' : md[0]);
         } else {
             dv[0].value = (isNaN(md[0]) ? '' : md[0]);
@@ -218,15 +224,40 @@ function displayProcess(str, str_vp = 0) {
     }
 }
 
+function displayProcess(str, str_vp = 0) {
+    let m = formatNumberWithDot(str);
+    display.forEach(function(d) {
+        d.value = '';
+    })
+
+    m.forEach(function(val, i) {
+        if (i <= 7) {
+            display[i].value = val;
+        } 
+    });
+
+    displayProcess_VP(str_vp);
+
+}
+
 function displayInput(value) {
-    REAL = parseFloat(value);
-    INPUT = value;
-    displayProcess(value, VP);
+    if (VPINPUT) {
+        REAL = REAL;
+        VP = value;
+        displayProcess_VP(VP);
+
+    } else {
+        REAL = parseFloat(value);
+        INPUT = value;
+        displayProcess(value, VP);
+    }
 }
 
 function formatToFixedLength(num, length = 8) {
     if (num === 0) return [0, 0];
-    num = Number(num.toExponential(8)); // ?
+    num = Number(num.toExponential(length)); // ?
+
+    console.log(num, REAL);
 
     if (Math.abs(num) < 1)  {
         const exponent = Math.floor(Math.log10(Math.abs(num)));
@@ -240,8 +271,7 @@ function formatToFixedLength(num, length = 8) {
     }
 
     let strNum = num.toString();
-
-    if (strNum.length <= length && !strNum.includes('e')) {
+    if (Math.abs(num) <= 99999999 && !strNum.includes('e')) {
         return [num, 0];
     }
 
@@ -252,7 +282,7 @@ function formatToFixedLength(num, length = 8) {
     return [fixedMantissa, exponent];
 }
 
-function displayOutput(value) {
+function displayOutput(value, vpno) {
     if (isNaN(value)) {
         displayOverflow();
         return
@@ -273,7 +303,11 @@ function displayOutput(value) {
         return;
     }
 
-    [INPUT, VP] = formatToFixedLength(REAL);
+    if (vpno) {
+        [INPUT, _] = formatToFixedLength(REAL);
+    } else {
+        [INPUT, VP] = formatToFixedLength(REAL);
+    }
     INPUT = INPUT.toString();
 
     if (value < 0) {
@@ -288,6 +322,9 @@ function displayOutput(value) {
 
     if ((value % 1) !== 0) {
         dot = true;
+        if (VP <= -1) {
+            //INPUT += '.';
+        }
     } else {
         dot = false;
         if (VP == 0) {
@@ -306,15 +343,19 @@ function preInput(mode) {
         //dv1.value = '';
         //dv_minus.value = '';
         dot = false;
+        VPINPUT = false;
         need_erase = true;
     } else {
         INPUT = '';
-        d_minus.value = '';
+        if (!VPINPUT) {
+            d_minus.value = '';
+        }
         dv0.value = '';
         dv1.value = '';
         dv_minus.value = '';
         VP = 0;
         dot = false;
+        //VPINPUT = false;
         need_erase = false;
     }
 }
@@ -344,6 +385,7 @@ function button_functional(value, action) {
 }
 
 function processNegative(value) {
+    value = processVP();
     if (isNegative() && value > 0) {
         value = -value;
     } else if (!isNegative() && value < 0) {
@@ -373,6 +415,7 @@ const functionals = {
             expression = save_expression;
         }
 
+
         const result = calculateExpression(expression); // Вычисляем
         if (!nodisplay) {
             displayInput(result);
@@ -394,13 +437,16 @@ const functionals = {
     // PLUS
     kplus: (value) => {
         if (inv) {
+            value = processNegative(value);
             m = m + parseFloat(value);
 
             if (m > max) {
                 m = parseFloat(value);
             } else if (m > 0 && REAL < min) {
                 m = parseFloat(value);
-            }
+            } else if (isNaN(m) || m == "Infinity") {
+                m = parseFloat(value);
+            } 
 
             preInput(true);
             //displayInput(value);
@@ -414,11 +460,14 @@ const functionals = {
     // MINUS
     kminus: (value) => {
         if (inv) {
+            value = processNegative(value);
             m = m - parseFloat(value);
 
             if (m > max) {
                 m = parseFloat(value);
             } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            } else if (isNaN(m) || m == "Infinity") {
                 m = parseFloat(value);
             }
 
@@ -434,11 +483,14 @@ const functionals = {
     // DIVISION
     kdiv: (value) => {
         if (inv) {
+            value = processNegative(value);
             m = m / parseFloat(value);
 
             if (m > max) {
                 m = parseFloat(value);
             } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            } else if (isNaN(m) || m == "Infinity") {
                 m = parseFloat(value);
             }
 
@@ -454,11 +506,14 @@ const functionals = {
     // MULTIPLY
     kmul: (value) => {
         if (inv) {
+            value = processNegative(value);
             m = m * parseFloat(value);
 
             if (m > max) {
                 m = parseFloat(value);
             } else if (m > 0 && REAL < min) {
+                m = parseFloat(value);
+            } else if (isNaN(m) || m == "Infinity") {
                 m = parseFloat(value);
             }
 
@@ -485,15 +540,24 @@ const functionals = {
             displayOutput(value);
             inv = false;
         } else {
-            if (!isNaN(value) && value !== "") {
-                d_minus.value = d_minus.value == '-' ? '' : '-';
+            if (VPINPUT) {
+                VP = -VP;
+                displayInput(VP);
+            } else {
+                if (!isNaN(value) && value !== "") {
+                    d_minus.value = d_minus.value == '-' ? '' : '-';
+                }
             }
         } 
     },
 
     // VP
     kvp: (value) => {
-        button_functional(value, "vp");
+        VPINPUT = true;
+        dv0.value = '0';
+        dv1.value = '0';
+        need_erase = true;
+        //button_functional(value, "vp");
     },
 
     // SQRT
@@ -518,33 +582,47 @@ const functionals = {
 
     // 10^X
     k8: (value) => {
-        value = processNegative(value);
-        value = Math.pow(10, value);
-        displayInput(value);
-        displayOutput(value);
-        inv = false;
-        preInput(true);
+        if (inv) {
+            value = processNegative(value);
+            value = Math.pow(10, value);
+            displayInput(value);
+            displayOutput(value);
+            inv = false;
+            preInput(true);
+        }
     },
 
 
     // LN
     k4: (value) => {
-        value = processNegative(value);
-        value = Math.log(Math.abs(value));
-        displayInput(value);
-        displayOutput(value);
-        inv = false;
-        preInput(true);
+        if (inv) {
+            value = processNegative(value);
+            value = Math.log(Math.abs(value));
+            if (!isNaN(value) || value == "Infinity") {
+                displayOverflow();
+                return;
+            }
+            displayInput(value);
+            displayOutput(value);
+            inv = false;
+            preInput(true);
+        }
     },
 
     // LOG10
     k5: (value) => {
-        value = processNegative(value);
-        value = Math.log10(value);
-        displayInput(value);
-        displayOutput(value);
-        inv = false;
-        preInput(true);
+        if (inv) {
+            value = processNegative(value);
+            value = Math.log10(value);
+            if (!isNaN(value) || value == "Infinity") {
+                displayOverflow();
+                return;
+            }
+            displayInput(value);
+            displayOutput(value);
+            inv = false;
+            preInput(true);
+        } 
     },
 
     // SINUS
@@ -642,6 +720,7 @@ const functionals = {
             inv = false;
             preInput(true);
         } else {
+
             if (expression.length > 2) {
                 expression = simplifyExpression(expression);
             }
@@ -652,9 +731,14 @@ const functionals = {
                 displayOutput(expression[expression.length-2]);
                 expression[expression.length-2] = tmp;
             } else if (expression.length == 0) {
-                expression[0] = value;
-                displayInput(0);
-                displayOutput("0.");
+                if (save_expression.length > 1) {
+                    expression.unshift(save_expression[1])
+                    expression.push(save_expression[0])
+                } else {
+                    expression.unshift(0);
+                    //expression.push("+");
+                }
+                functionals.kmem();
             } else if (expression.length == 1) {
                 tmp = value;
                 displayInput(expression[0])
@@ -671,6 +755,7 @@ const functionals = {
     kleft: (value) => {
         if (inv) {
             if (value != "") {
+                value = processNegative(value);
                 m = parseFloat(value);
                 inv = false;
                 preInput(true);
@@ -718,12 +803,20 @@ const functionals = {
         if (inv) {
             value = processNegative(value);
 
-            value = factorial(value);
+            if (value == 0) {
+                value = 1;
+            } else if (value < 0) {
+                displayOverflow();
+                return;
+            }
+
+            value = factorial(value.toFixed(0));
             displayInput(value);
             displayOutput(value);
             preInput(true);
             inv = false;
         } else {
+            d_minus.value = '';
             displayInput(Math.PI);
             preInput(true);
         }
@@ -783,6 +876,7 @@ function clear() {
     need_erase = true;
     dot = false;
     OF = false;
+    VPINPUT = false;
 }
 
 displayInput('0.');
@@ -811,36 +905,49 @@ buttons.forEach(function(button) {
                 return;
             }
 
-            if (button.id == "kdot") {
-                dot = true;
-                if (need_erase && INPUT !== "0.") {
-                    displayInput('0.');
+            if (VPINPUT) {
+                let str = VP == 0 ? '' : VP.toString();
+                str = str.replace('.', '');
+                if (str.length >= 2) {
+                    str = '';
                 }
 
-                need_erase = false;
+                str += button.value;
+
+                displayInput(str);
+                return;
+            } else {
+                if (button.id == "kdot") {
+                    dot = true;
+                    if (need_erase && INPUT !== "0.") {
+                        displayInput('0.');
+                    }
+
+                    need_erase = false;
+                    return;
+                }
+
+                if (button.id == "k0" && num == 0 && !dot) {
+                    displayInput('0.');
+                    need_erase = true;
+                    return;
+                }
+
+                let str = INPUT;
+
+                if (!dot) {
+                    str = str.replace('.', '');
+                }
+
+                str += button.value;
+
+                if (button.id !== "kdot" && !dot) {
+                    str += ".";
+                }
+
+                displayInput(str);
                 return;
             }
-
-            if (button.id == "k0" && num == 0 && !dot) {
-                displayInput('0.');
-                need_erase = true;
-                return;
-            }
-            
-            let str = INPUT;
-
-            if (!dot) {
-                str = str.replace('.', '');
-            }
-
-            str += button.value;
-
-            if (button.id !== "kdot" && !dot) {
-                str += ".";
-            }
-
-            displayInput(str);
-            return;
         }
 
         if (button.id in functionals) {
