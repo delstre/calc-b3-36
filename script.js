@@ -117,9 +117,6 @@ function calculateExpression(expression) {
         case '^':
           result = Math.pow(result, nextNumber);
           break;
-        //case 'vp':
-          //result *= Math.pow(10, nextNumber);
-          //break;
       }
     }
   }
@@ -188,6 +185,15 @@ function displayOverflow() {
 
 function processVP() {
     if (VPINPUT) {
+        if (REAL < 1) {
+            const exponent = Math.floor(Math.log10(Math.abs(REAL)));
+            let mantissa = REAL / Math.pow(10, exponent);
+            if (REAL.toString()[0] != "0") { // non exponentional
+                REAL = REAL * Math.pow(10, -exponent);
+            }
+
+            console.log(REAL, VP);
+        }
         REAL = REAL * Math.pow(10, VP);
         VPINPUT = false;
     }
@@ -258,9 +264,9 @@ function formatToFixedLength(num, length = 8) {
     num = Number(num.toExponential(length)); // ?
 
     if (Math.abs(num) < 1)  {
-        if (num.toFixed(8) <= 0) {
-            return [0, 0];
-        }
+        //if (num.toFixed(8) <= 0) {
+            //return [0, 0];
+        //}
 
         const exponent = Math.floor(Math.log10(Math.abs(num)));
         let mantissa = num / Math.pow(10, exponent);
@@ -325,8 +331,8 @@ function displayOutput(value, vpno) {
 
     if ((value % 1) !== 0) {
         dot = true;
-        if (VP <= -1) {
-            //INPUT += '.';
+        if (VP < 0 && INPUT.length == 1) {
+            INPUT += '.';
         }
     } else {
         dot = false;
@@ -452,8 +458,6 @@ const functionals = {
             } 
 
             preInput(true);
-            //displayInput(value);
-            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "+");
@@ -475,8 +479,6 @@ const functionals = {
             }
 
             preInput(true);
-            //displayInput(value);
-            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "-");
@@ -544,8 +546,10 @@ const functionals = {
             inv = false;
         } else {
             if (VPINPUT) {
-                VP = -VP;
-                displayInput(VP);
+                if (Math.abs(VP) > 0) {
+                    VP = -VP;
+                    displayInput(VP);
+                }
             } else {
                 if (!isNaN(value) && value !== "") {
                     d_minus.value = d_minus.value == '-' ? '' : '-';
@@ -601,7 +605,8 @@ const functionals = {
         if (inv) {
             value = processNegative(value);
             value = Math.log(Math.abs(value));
-            if (!isNaN(value) || value == "Infinity") {
+            console.log(value);
+            if (isNaN(value) || value == "Infinity") {
                 displayOverflow();
                 return;
             }
@@ -617,7 +622,7 @@ const functionals = {
         if (inv) {
             value = processNegative(value);
             value = Math.log10(value);
-            if (!isNaN(value) || value == "Infinity") {
+            if (isNaN(value) || value == "Infinity") {
                 displayOverflow();
                 return;
             }
@@ -830,6 +835,9 @@ const functionals = {
 
     // FUNCTIONAL BUTTON
     kf: () => {
+        if (VPINPUT) {
+            functionals.kequal();
+        }
         inv = !inv;
     },
 
@@ -914,7 +922,7 @@ buttons.forEach(function(button) {
             if (VPINPUT) {
                 let str = VP == 0 ? '' : VP.toString();
                 str = str.replace('.', '');
-                if (str.length >= 2) {
+                if (str.length >= (str.includes('-') ? 3 : 2)) {
                     str = '';
                 }
 
