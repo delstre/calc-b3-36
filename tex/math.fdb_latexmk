@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1733657264.83852 "math.tex" "math.pdf" "math" 1733657265.44145 0
+["pdflatex"] 1734262080.29777 "math.tex" "math.pdf" "math" 1734262080.93123 0
   "/home/delstre-/.texlive/texmf-var/fonts/tfm/lh/lh-t2a/labx1200.tfm" 1731241644.86106 3308 eee81981029f67083258db36df06e523 ""
   "/home/delstre-/.texlive/texmf-var/fonts/tfm/lh/lh-t2a/labx1728.tfm" 1733417081.59988 3312 d199be9bd555944e2403193d58a0256a ""
   "/home/delstre-/.texlive/texmf-var/fonts/tfm/lh/lh-t2a/larm1200.tfm" 1731241633.36664 3240 c2435f2b5cd66d4930bc29b8df87967e ""
@@ -42,8 +42,8 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1727349926 41588 b43d3e860a4f94167ee1e725ff526a72 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1733655715.49178 5314505 c65d55cfca6e0ce870072f996b6d0b8f ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1733655658 7192550 46bb2ca4cfd0cf16b22e960764b369ff ""
-  "math.aux" 1733657265.31142 409 32ee2570400a0cf9efbaa2c33063c0d0 "pdflatex"
-  "math.tex" 1733657263.87809 14257 80b6c61b31d42c25d246543fda35624b ""
+  "math.aux" 1734262080.79743 409 32ee2570400a0cf9efbaa2c33063c0d0 "pdflatex"
+  "math.tex" 1734262079.02736 14256 21ae3a50edff6862e738c71bca16c699 ""
   (generated)
   "math.aux"
   "math.log"

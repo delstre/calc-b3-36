@@ -17,26 +17,22 @@ let ENABLE = true;
 let OF = false;
 let VPINPUT = false;
 
-// input.value 
 let INPUT = '';
 let REAL = 0;
 let VP = 0;
 
-
-// d_vp.value
-
-let m = 0; // memory var
+let m = 0;
 
 let act = 0;
-let _act = 0; // cached
+let _act = 0;
 
-let inv = false; // functional toggle
-let invtr = false; // inverse trigonametric (arcsin, arccos, arctg)
+let inv = false;
+let invtr = false;
 
-let write = -1; // for ( 2 * 4 ) and etc.
+let write = -1;
 let writen = false;
 
-let rad = false; // radians
+let rad = false;
 
 let max = Math.pow(10, 99);
 let min = Math.pow(10, -99);
@@ -44,10 +40,9 @@ let min = Math.pow(10, -99);
 let dot = false;
 
 
-// -----
 let expression = [];
 let save_expression = [];
-let texpressions = []; // temp expressions
+let texpressions = [];
 texpressions[0] = [];
 
 let need_erase = true;
@@ -188,7 +183,7 @@ function processVP() {
         if (REAL < 1) {
             const exponent = Math.floor(Math.log10(Math.abs(REAL)));
             let mantissa = REAL / Math.pow(10, exponent);
-            if (REAL.toString()[0] != "0") { // non exponentional
+            if (REAL.toString()[0] != "0") {
                 REAL = REAL * Math.pow(10, -exponent);
             }
 
@@ -261,13 +256,9 @@ function displayInput(value) {
 
 function formatToFixedLength(num, length = 8) {
     if (num === 0) return [0, 0];
-    num = Number(num.toExponential(length)); // ?
+    num = Number(num.toExponential(length));
 
     if (Math.abs(num) < 1)  {
-        //if (num.toFixed(8) <= 0) {
-            //return [0, 0];
-        //}
-
         const exponent = Math.floor(Math.log10(Math.abs(num)));
         let mantissa = num / Math.pow(10, exponent);
 
@@ -346,11 +337,6 @@ function displayOutput(value, vpno) {
 
 function preInput(mode) {
     if (mode) {
-        //input.value = "0.";
-        //d_minus.value = "";
-        //dv0.value = '';
-        //dv1.value = '';
-        //dv_minus.value = '';
         dot = false;
         VPINPUT = false;
         need_erase = true;
@@ -364,7 +350,6 @@ function preInput(mode) {
         dv_minus.value = '';
         VP = 0;
         dot = false;
-        //VPINPUT = false;
         need_erase = false;
     }
 }
@@ -425,7 +410,7 @@ const functionals = {
         }
 
 
-        const result = calculateExpression(expression); // Вычисляем
+        const result = calculateExpression(expression);
         if (!nodisplay) {
             displayInput(result);
             displayOutput(result);
@@ -436,7 +421,7 @@ const functionals = {
         }
 
         if (!noexpr) {
-            expression = []; // Сбрасываем выражение
+            expression = [];
         }
 
         need_erase = true;
@@ -500,8 +485,6 @@ const functionals = {
             }
 
             preInput(true);
-            //displayInput(value);
-            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "/");
@@ -523,8 +506,6 @@ const functionals = {
             }
 
             preInput(true);
-            //displayInput(value);
-            //displayOutput(m);
             inv = false;
         } else {
             button_functional(value, "*");
@@ -564,7 +545,6 @@ const functionals = {
         dv0.value = '0';
         dv1.value = '0';
         need_erase = true;
-        //button_functional(value, "vp");
     },
 
     // SQRT
